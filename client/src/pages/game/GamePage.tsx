@@ -9,6 +9,7 @@ class GamePage extends React.Component {
         return (
             <div>
                 <h1>Gobang Game</h1>
+                <button onClick={()=>window.location.href='/'}></button>
             </div>
         )
     }

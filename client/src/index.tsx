@@ -3,18 +3,19 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { socket } from './communication/connection';
+import { BrowserRouter } from 'react-router-dom';
 
-socket.on("connect",()=>{
-  console.log("connect success", socket.id);
-})
+// socket.on("connect",()=>{
+//   console.log("connect success", socket.id);
+// })
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <BrowserRouter>
+    <App></App>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

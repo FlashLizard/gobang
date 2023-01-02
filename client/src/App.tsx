@@ -1,33 +1,23 @@
 import React from 'react';
 import HomePage from './pages/home/HomePage';
 import GamePage from './pages/game/GamePage';
+import RoomListPage from './pages/roomList/RoomListPage';
 import './App.css';
+import { Routes, Route } from 'react-router-dom'
 
-interface AppState {
-  pageName: string,
-}
-
-class App extends React.Component<{},AppState> {
+class App extends React.Component {
   constructor(props: any) {
     super(props);
-    this.state = {
-        pageName: "home",
-    };
-  }
-
-  setPage(pageName: string) {
-    this.setState({pageName: pageName});
   }
 
   render(): React.ReactNode {
-    let page: React.ReactNode = (<p>Null</p>);
-    switch(this.state.pageName) {
-        case "home": page = (<HomePage startgame={()=>{this.setPage("game")}}></HomePage>); break;
-        case "game": page = (<GamePage></GamePage>); break;
-    }
     return (
-      <div className="App">
-        {page}
+      <div className='App'>
+        <Routes>
+          <Route path='/' element={<HomePage />}></Route>
+          <Route path='/game' element={<GamePage />}></Route>
+          <Route path='/roomlist' element={<RoomListPage />}></Route>
+        </Routes>
       </div>
     );
   }

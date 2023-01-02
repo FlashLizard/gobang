@@ -1,20 +1,31 @@
-import Character from "./Player";
+import Character from "./Character";
 
 class Room{
     name: string
-    players: Character[] = []
-    maxPlayerCount: number
+    isInGame: boolean = false
+    charaters: Character[] = []
+    maxCharaterCount: number
+    minCharaterCount: number
 
-    constructor(name: string, players?: Character[], maxPlayerCount: number = 10) {
+    constructor(name: string, charaters?: Character[], maxCharaterCount: number = 10, minCharaterCount: number = 1) {
         this.name = name;
-        if(players) {
-            this.players = this.players.concat(players);
+        if(charaters) {
+            this.charaters = this.charaters.concat(charaters);
         }
-        this.maxPlayerCount = maxPlayerCount;
+        this.maxCharaterCount = maxCharaterCount;
+        this.minCharaterCount = minCharaterCount;
     }
 
-    playerCount(): number {
-        return this.players.length;
+    isFull(): boolean {
+        return this.charaterCount() >= this.maxCharaterCount;
+    }
+
+    charaterCount(): number {
+        return this.charaters.length;
+    }
+
+    addCharater(charater: Character) {
+        this.charaters.push(charater);
     }
 }
 
