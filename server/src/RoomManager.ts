@@ -1,5 +1,6 @@
 import Room from "./Room";
-import Character,{Player} from "./Character";
+import {RoomInfo} from "@communication/parameters"
+import { logger } from "./ServerLogger";
 
 const ROOM_MANAGER_CODE = {
     EXIST_ROOM: 0,
@@ -7,18 +8,31 @@ const ROOM_MANAGER_CODE = {
 
 }
 
+interface StringArray<T> {
+    [index:string]: T,
+}
+
 const roomManager: {
-    rooms: {[key:string]:Room}
-    createRoom(name: string): void
+    rooms: StringArray<Room>
+    createRoom(name: string): Room
     getRoom(name: string) : Room
+    getRoomList(): RoomInfo[]
 } = {
     rooms: {},
     createRoom(name: string) {
-        this.rooms[name] = new Room(name);
+        logger.info('createRoom ',name);
+        return this.rooms[name] = new Room(name);
     },
     getRoom(name: string) {
         return this.rooms[name];
-    }
+    },
+    getRoomList() {
+        let result: RoomInfo[] = []
+        for(let i in this.rooms) {
+            result.push(this.rooms[i].getInfo());
+        }
+        return result;
+    },
 };
 
 export default roomManager;

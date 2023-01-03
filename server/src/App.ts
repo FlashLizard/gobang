@@ -1,18 +1,32 @@
-import { Server } from "socket.io"
+import { Server, Socket } from "socket.io"
 import { createServer } from "http"
 import express from "express"
-import settings from "@root/settings.json"
-import Logger from "@root/tools/Logger"
+import settings from "@communication/settings.json"
+import roomManager from "./RoomManager"
+import { logger } from "./ServerLogger"
+import { Player } from "./Player"
+import { LoginInfo } from "@communication/parameters"
 
-export const logger = Logger.createLogger("server.log");
 let app = express();
 let http = createServer(app);
 let io = new Server(http);
+let users: { [index: string]: Player } = {}
 
-io.on('connect', (socket) => {
-    logger.info(`a user connected`);
-})
+io.on('connection', (socket) => {
+    logger.info(`socket id ${socket.id} connected`);
+    socket.on("login", (user: LoginInfo) => {
+        logger.info(user);
+        if (!users[user.name]) {
+            users[user.name] = new Player(user.name, io.sockets.sockets.get(user.socketId) as Socket);
+            logger.info(`user ${user.name} logined from id ${user.socketId}`);
+        }
+        else {
+            users[user.name].freshSocket(io.sockets.sockets.get(user.socketId) as Socket);
+            logger.info(`user ${user.name} relogined from id ${user.socketId}`);
+        }
+    })
+});
 
-http.listen(settings.serverPort)
+http.listen(settings.serverPort);
 logger.info(`server is listening ${settings.serverPort} port`);
 

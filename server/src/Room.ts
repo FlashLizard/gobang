@@ -1,4 +1,6 @@
+import { RoomInfo } from "@communication/parameters";
 import Character from "./Character";
+import { Player } from "./Player";
 
 class Room{
     name: string
@@ -26,6 +28,23 @@ class Room{
 
     addCharater(charater: Character) {
         this.charaters.push(charater);
+    }
+
+    getInfo(): RoomInfo {
+        return {
+            name: this.name,
+            maxCount: this.maxCharaterCount,
+            count: this.charaterCount(),
+            isIngame: this.isInGame
+        };
+    }
+
+    emit(event: string, para: any) {
+        for(let c of this.charaters) {
+            if('emit' in c) {
+                (c as Player).emit(event, para);
+            }
+        }
     }
 }
 

@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
+import Page from "../Page";
 import { RoomInfo } from "../../communication/parameters";
-import { socket } from "../../communication/connection";
+import socket from "../../communication/socket";
+import NavigateButton from "../../components/NavigateButton";
 
 interface RoomListPageState {
     roomList: RoomInfo[]
 }
 
-class RoomListPage extends React.Component<{},RoomListPageState> {
+class RoomListPage extends Page<{},RoomListPageState> {
+
     constructor(props: any) {
         super(props)
         this.state = {
@@ -15,10 +18,10 @@ class RoomListPage extends React.Component<{},RoomListPageState> {
     }
 
     componentDidMount(): void {
-        socket.on('room-list',()=>{})
-    }
-
-    componentWillUnmount(): void {
+        
+        socket.on('room-list',(para: RoomInfo[])=>{
+            this.setState({roomList: para});
+        })
         socket.emit('get-room-list')
     }
 
@@ -36,7 +39,7 @@ class RoomListPage extends React.Component<{},RoomListPageState> {
         return (
             <div>
                 <h1>Room List</h1>
-                <button onClick={()=>window.location.href='/'}>Back To Home</button>
+                <NavigateButton to='/'>Back To Home</NavigateButton>
                 <button onClick={()=>socket.emit('get-room-list')}>Fresh</button>
                 <br></br>
                 <table align="center" border={1}>

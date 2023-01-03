@@ -1,15 +1,14 @@
-import React, { useContext } from "react";
+import React from "react";
 import Page from "../Page";
 import "./HomePage.css"
 import socket from "../../communication/socket";
-import { NavigateFunction, useNavigate } from "react-router-dom";
 import NavigateButton from "../../components/NavigateButton";
-interface HomePageState {
+interface WaitPageState {
     showCreateRoomPanel: boolean
     showQuickStartPanel: boolean
 }
 
-class HomePage extends Page<{}, HomePageState> {
+class WaitPage extends Page<{}, WaitPageState> {
 
     constructor(props: any) {
         super(props)
@@ -85,4 +84,4 @@ class HomePage extends Page<{}, HomePageState> {
     }
 }
 
-export default HomePage;
+export default WaitPage;
