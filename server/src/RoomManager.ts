@@ -2,26 +2,20 @@ import Room from "./Room";
 import {RoomInfo} from "@communication/parameters"
 import { logger } from "./ServerLogger";
 
-const ROOM_MANAGER_CODE = {
-    EXIST_ROOM: 0,
-    CREATE_SUCCESS: 1,
-
-}
-
 interface StringArray<T> {
     [index:string]: T,
 }
 
 const roomManager: {
     rooms: StringArray<Room>
-    createRoom(name: string): Room
+    createRoom(name: string,host: string): Room
     getRoom(name: string) : Room
     getRoomList(): RoomInfo[]
 } = {
     rooms: {},
-    createRoom(name: string) {
+    createRoom(name: string, host: string) {
         logger.info('createRoom ',name);
-        return this.rooms[name] = new Room(name);
+        return this.rooms[name] = new Room(name,host);
     },
     getRoom(name: string) {
         return this.rooms[name];

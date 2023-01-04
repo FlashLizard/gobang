@@ -1,9 +1,13 @@
+import { CharacterInfo } from "@root/client/src/communication/parameters";
 import Character from "./Character";
 
-class AI implements Character{
-    name: string
+class AI extends Character{
 
     constructor(name?: string) {
+        super();
+        this.ok = true;
+        this.type = 'AI';
+
         if(name) {
             this.name = name;
         }
@@ -12,12 +16,16 @@ class AI implements Character{
         }
     }
 
-    on(event: string, callback: (para: any) => any) {
-
+    getInfo(): CharacterInfo {
+        return {
+            name: this.name,
+            ok: true,
+            type: 'AI',
+        }
     }
     
     async request(event: string, para: any) {
-        
+        return [0,0];
     }
 
 }

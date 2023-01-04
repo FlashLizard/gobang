@@ -1,14 +1,15 @@
 import React, { useContext } from "react";
 import Page from "../Page";
-import { RoomInfo } from "../../communication/parameters";
-import socket from "../../communication/socket";
+import { ResponseInfo, RoomInfo } from "../../communication/parameters";
+import socket, { off, on } from "../../communication/socket";
 import NavigateButton from "../../components/NavigateButton";
+import navigate from "../../components/GetNavigate";
 
 interface RoomListPageState {
     roomList: RoomInfo[]
 }
 
-class RoomListPage extends Page<{},RoomListPageState> {
+class RoomListPage extends Page<{}, RoomListPageState> {
 
     constructor(props: any) {
         super(props)
@@ -18,20 +19,33 @@ class RoomListPage extends Page<{},RoomListPageState> {
     }
 
     componentDidMount(): void {
-        
-        socket.on('room-list',(para: RoomInfo[])=>{
-            this.setState({roomList: para});
-        })
-        socket.emit('get-room-list')
+
+        on(this,'room-list', (para: RoomInfo[]) => {
+            this.setState({ roomList: para });
+        });
+        on(this,'response-join-room', (para: ResponseInfo) => {
+            console.log('response-join-room', para);
+            alert(para.desc);
+            if (para.code) {
+                navigate('/room');
+            }
+        });
+        socket.emit('get-room-list');
+    }
+
+    componentWillUnmount(): void {
+        off(this);
     }
 
     render(): React.ReactNode {
-        let rooms = this.state.roomList.map((value)=>{
-            return (<tr>
+        let rooms = this.state.roomList.map((value, i) => {
+            return (<tr key={i}>
                 <td>{value.name}</td>
                 <td>{value.count}/{value.maxCount}</td>
                 <td>
-                    <button>加入房间</button>
+                    <button onClick={() => {
+                        socket.emit('join-room', value.name);
+                    }}>加入房间</button>
                 </td>
             </tr>)
         })
@@ -40,20 +54,20 @@ class RoomListPage extends Page<{},RoomListPageState> {
             <div>
                 <h1>Room List</h1>
                 <NavigateButton to='/'>Back To Home</NavigateButton>
-                <button onClick={()=>socket.emit('get-room-list')}>Fresh</button>
+                <button onClick={() => socket.emit('get-room-list')}>Fresh</button>
                 <br></br>
                 <table align="center" border={1}>
-                    <tr>
-                        <td>名称</td>
-                        <td>人数</td>
-                        <td>按钮</td>
-                    </tr>
-                    {rooms}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>人数</th>
+                            <th>按钮</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rooms}
+                    </tbody>
+
                 </table>
             </div>
         )

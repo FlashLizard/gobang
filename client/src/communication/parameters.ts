@@ -1,11 +1,13 @@
 export interface RoomInfo {
     name: string,
+    list: (CharacterInfo | null)[],
+    host: string,
     count: number,
     isIngame: boolean,
     maxCount: number,
 }
 
-export interface GameInfo {
+export interface GobangGameInfo {
     board: number[][]
 } 
 
@@ -15,7 +17,18 @@ export interface LoginInfo {
 }
 
 export interface GameResultInfo {
-    winner: string | null,
+    winner: string | null | undefined,
+}
+
+export interface CharacterInfo {
+    name: string,
+    ok: boolean,
+    type: string,
 }
 
 export type RequestPara = null
+
+export interface ResponseInfo {
+    code: boolean,
+    desc: string,
+}

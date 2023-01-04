@@ -2,9 +2,8 @@ import { Server, Socket } from "socket.io"
 import { createServer } from "http"
 import express from "express"
 import settings from "@communication/settings.json"
-import roomManager from "./RoomManager"
 import { logger } from "./ServerLogger"
-import { Player } from "./Player"
+import Player from "./Player"
 import { LoginInfo } from "@communication/parameters"
 
 let app = express();

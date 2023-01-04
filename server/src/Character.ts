@@ -1,10 +1,18 @@
-import { RequestPara } from "@root/client/src/communication/parameters";
+import { CharacterInfo, RequestPara } from "@root/client/src/communication/parameters";
 
-interface Character {
-    name: string
+abstract class Character {
+    name: string = ""
+    type: 'None' | 'Player' | 'AI' = "None"
+    ok: boolean = false
 
-    on: (event: string, callback: (...args: any[]) => any) => any;
-    request: (event: string, para?: RequestPara, time?: number) => Promise<any>;
+    abstract request(event: string, para?: RequestPara, time?: number, showTime?: boolean): Promise<any>;
+    getInfo(): CharacterInfo {
+        return {
+            name: this.name,
+            type: this.type,
+            ok: this.ok
+        };
+    }
 
 }
 
