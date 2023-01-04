@@ -5,6 +5,7 @@ import './RoomPage.css'
 import GlobalContext from "../../context/Context";
 import { CharacterInfo, ResponseInfo, RoomInfo } from "../../communication/parameters";
 import navigate from "../../components/GetNavigate";
+import boardcast from "../../tools/broadcast";
 interface RoomPageState {
     ok: boolean,
     roomName: string,
@@ -43,14 +44,14 @@ class RoomPage extends Page<{}, RoomPageState> {
                 }
             }
             if(flag) {
-                alert('You are kicked out!');
+                boardcast.alert('You are kicked out!');
                 navigate('/');
             }
             this.setState({ roomName: para.name, list: list, host: para.host })
         });
         on(this,'response-start-game', (para: ResponseInfo) => {
             console.log('response-start-game', para);
-            alert(para.desc);
+            boardcast.alert(para.desc);
             if (para.code) {
                 this.toGame = true;
                 navigate('/game');

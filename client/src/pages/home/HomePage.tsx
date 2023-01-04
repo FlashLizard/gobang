@@ -5,6 +5,7 @@ import socket, { off, on } from "../../communication/socket";
 import NavigateButton from "../../components/NavigateButton";
 import navigate from "../../components/GetNavigate";
 import { ResponseInfo } from "../../communication/parameters";
+import boardcast from "../../tools/broadcast";
 interface HomePageState {
     showCreateRoomPanel: boolean
     showQuickStartPanel: boolean
@@ -25,10 +26,10 @@ class HomePage extends Page<{}, HomePageState> {
     componentDidMount(): void {
         socket.emit('exit-room');
         on(this,'response-create-room',(para:ResponseInfo)=>{
-            alert(para.desc);
+            boardcast.alert(para.desc);
         });
         on(this,'response-join-room',(para:ResponseInfo)=>{
-            alert(para.desc);
+            boardcast.alert(para.desc);
             if(para.code) {
                 navigate('/room');
             }

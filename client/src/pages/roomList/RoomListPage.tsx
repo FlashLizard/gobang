@@ -4,6 +4,7 @@ import { ResponseInfo, RoomInfo } from "../../communication/parameters";
 import socket, { off, on } from "../../communication/socket";
 import NavigateButton from "../../components/NavigateButton";
 import navigate from "../../components/GetNavigate";
+import boardcast from "../../tools/broadcast";
 
 interface RoomListPageState {
     roomList: RoomInfo[]
@@ -25,7 +26,7 @@ class RoomListPage extends Page<{}, RoomListPageState> {
         });
         on(this,'response-join-room', (para: ResponseInfo) => {
             console.log('response-join-room', para);
-            alert(para.desc);
+            boardcast.alert(para.desc);
             if (para.code) {
                 navigate('/room');
             }

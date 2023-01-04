@@ -133,5 +133,3 @@
 
 - null
 - try to get 'room-info' event
-
-### 

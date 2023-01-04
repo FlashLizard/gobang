@@ -9,11 +9,12 @@ import Game from "./core/Game";
 import { CharacterInfo } from "@root/client/src/communication/parameters";
 import GobangGame from "./core/GobangGame";
 import gameManager from "./GameManager";
+import { isThisTypeNode } from "typescript";
 
 class Player extends Character {
     private _room: Room | null = null
     socket: Socket
-    game: Game | null = null
+    private _game: Game | null = null
 
     constructor(name: string, socket: Socket) {
         super();
@@ -26,7 +27,17 @@ class Player extends Character {
         this.ok = false;
     }
 
+    public set game(value: Game | null) {
+        if(value == null) this.ok = false;
+        this._game = value;
+    }
+
+    public get game() {
+        return this._game;
+    }
+
     public set room(value) {
+        if(value != this._room) this.ok = false;
         this.emit('room-info');
         this._room = value;
     }
