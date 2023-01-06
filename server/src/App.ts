@@ -1,8 +1,8 @@
 import { Server, Socket } from "socket.io"
 import { createServer } from "http"
 import express from "express"
-import settings from "@communication/settings.json"
-import { logger } from "./ServerLogger"
+import {serverPort} from "@communication/settings"
+import { logger } from "./tools/ServerLogger"
 import Player from "./Player"
 import { LoginInfo } from "@communication/parameters"
 
@@ -26,6 +26,6 @@ io.on('connection', (socket) => {
     })
 });
 
-http.listen(settings.serverPort);
-logger.info(`server is listening ${settings.serverPort} port`);
+http.listen(serverPort);
+logger.info(`server is listening ${serverPort} port`);
 

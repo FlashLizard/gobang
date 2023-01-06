@@ -26,7 +26,7 @@ export interface CharacterInfo {
     type: string,
 }
 
-export type RequestPara = null
+export type RequestPara = null | number[][]
 
 export interface ResponseInfo {
     code: boolean,

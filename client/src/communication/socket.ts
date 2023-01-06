@@ -1,9 +1,9 @@
 import {io} from "socket.io-client";
-import settings from "./settings.json"
+import {serverURL} from "./settings"
 
 let components: ({component: any, listeners: {event: string, callback:any}[]})[] = []
 
-const socket = io(settings.serverURL, {
+const socket = io(serverURL, {
     transports: ['websocket', 'polling', 'flashsocket']
 });
 

@@ -3,7 +3,7 @@ import Room from "./Room";
 import Game from "./core/Game";
 import GobangGame from "./core/GobangGame";
 
-type GameType = 'Gobang';
+export type GameType = 'Gobang';
 
 const gameManager: {
     games: Game[]

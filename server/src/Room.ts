@@ -69,14 +69,14 @@ class Room{
     }
 
     changeCharacter(index: number, charater: Character|null) {
-        let preC:(Player|AI|null) = this.charaters[index];
+        let preC:(Character|null) = this.charaters[index];
         this.charaters[index] = charater;
         if(charater && 'room' in charater) {
             charater.room = this;
         }
-        if(preC && 'emit' in preC)
+        if(preC instanceof Player)
         {
-            let player = preC as Player;
+            let player = preC;
             player.emit('room-info',this.getInfo());
             player.room = null;
         }

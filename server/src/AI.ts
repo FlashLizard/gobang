@@ -1,7 +1,10 @@
 import { CharacterInfo } from "@root/client/src/communication/parameters";
-import Character from "./Character";
+import Character, { RequestEvent, RequestPara } from "./Character";
+import { GobangRequest, gobangABP } from "./core/GobangGame";
+import ABP from "./core/AI/ABP";
 
 class AI extends Character{
+    abp: ABP<any,any> | null = null
 
     constructor(name?: string) {
         super();
@@ -16,6 +19,10 @@ class AI extends Character{
         }
     }
 
+    initialize(turn: number,depth: number = 2) {
+        this.abp = new ABP(gobangABP,turn,depth);
+    }
+
     getInfo(): CharacterInfo {
         return {
             name: this.name,
@@ -24,10 +31,14 @@ class AI extends Character{
         }
     }
     
-    async request(event: string, para: any) {
-        return [0,0];
-    }
+    async request<event extends RequestEvent>(event: RequestEvent, para: typeof RequestPara[event] | null) {
 
+        switch(event) {
+            case 'action-pos':
+                return this.abp?.getAction(para);
+        }
+        return null;
+    }
 }
 
 export default AI;

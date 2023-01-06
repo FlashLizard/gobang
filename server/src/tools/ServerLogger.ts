@@ -1,3 +1,3 @@
-import Logger from '@root/tools/Logger'
+import Logger from 'src/tools/Logger'
 
 export const logger = Logger.createLogger("server.log");

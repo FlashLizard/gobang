@@ -5,9 +5,9 @@ table.board
 .board td
 {
     border: 2px solid black;
-    width: 30px;
-    height: 30px;
-    font-size: 100%;
+    width: 20px;
+    height: 20px;
+    font-size: 90%;
     text-align:center;
     vertical-align: middle;
     background-color:rgb(255, 229, 101);

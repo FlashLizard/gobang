@@ -7,6 +7,7 @@ import './GamePage.css'
 import socket from "../../communication/socket";
 import NavigateButton from "../../components/NavigateButton";
 import navigate from "../../components/GetNavigate";
+import {boardSize} from '../../communication/settings'
 
 
 interface GamePageState {
@@ -22,9 +23,9 @@ class GamePage extends Page<{}, GamePageState> {
         super(props)
 
         let tmp = []
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < boardSize; i++) {
             let row = [];
-            for (let j = 0; j < 6; j++) row.push(0);
+            for (let j = 0; j < boardSize; j++) row.push(-1);
             tmp.push(row);
         }
 
@@ -127,10 +128,10 @@ class Board extends React.Component<BoardProp> {
             return (<tr key={i}>
                 {
                     row.map((value, j) => {
-                        return value == 0 ?
+                        return value == -1 ?
                             (<td key={j} onClick={() => this.onClickSlot([i, j])}></td>) :
                             (<td key={j}>
-                                {value == 0 ? " " : (value == 1 ? "⚫" : "⚪")}
+                                {value == -1 ? " " : (value == 0 ? "⚫" : "⚪")}
                             </td>);
                     })
                 }

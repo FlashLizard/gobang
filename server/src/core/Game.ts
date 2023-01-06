@@ -1,7 +1,8 @@
 import { GobangGameInfo, GameResultInfo } from "@communication/parameters";
+import AI from "src/AI";
 import Player from "src/Player";
 import Room from "src/Room";
-import { logger } from "src/ServerLogger";
+import { logger } from "src/tools/ServerLogger";
 
 abstract class Game {
     room: Room
@@ -9,11 +10,14 @@ abstract class Game {
     constructor(room: Room) {
         this.room = room;
         this.room.isInGame = true;
-        for (let c of this.room.charaters) {
+        this.room.charaters.forEach((c,i) => {
             if (c instanceof Player) {
                 c.game = this;
             }
-        }
+            if (c && c instanceof AI && 'initialize' in c ) {
+                c.initialize(i);
+            }
+        });
     }
 
     abstract getInfo(): any

@@ -1,6 +1,6 @@
 import Room from "./Room";
 import {RoomInfo} from "@communication/parameters"
-import { logger } from "./ServerLogger";
+import { logger } from "./tools/ServerLogger";
 
 interface StringArray<T> {
     [index:string]: T,

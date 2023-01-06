@@ -4,7 +4,7 @@ import roomManager from "./RoomManager";
 import { randomUUID } from "crypto";
 import AI from "./AI";
 import Room from "./Room";
-import { logger } from "./ServerLogger";
+import { logger } from "./tools/ServerLogger";
 import Game from "./core/Game";
 import { CharacterInfo } from "@root/client/src/communication/parameters";
 import GobangGame from "./core/GobangGame";
