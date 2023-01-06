@@ -18,7 +18,7 @@ class ABP<GameState, GameAction> {
     depth: number
     view: number
 
-    constructor(game: IABPor<GameState, GameAction>, view: number, depth: number = 3) {
+    constructor(game: IABPor<GameState, GameAction>, view: number, depth: number = 4) {
         this.game = game;
         this.depth = depth;
         this.view = view;

@@ -73,11 +73,12 @@ export interface GobangRequest {
 
 class GobangABP implements IABPor<GameState, GameAction> {
 
-
     getSlotScore(board: GameState, x: number, y: number, view: number, myTurn: boolean): number { //myTurn: 如果是我导致了当前局面, 则为真
         let score = 0;
         for (let d in dx) {
             let cnt = 0//!myTurn ? 0 : 1;
+            let ccnt = 0
+            let cflag = false;
             let flag = true;
             let [xx, yy] = [x, y];
             for (let i = 0; i < 5; i++) {
@@ -87,17 +88,25 @@ class GobangABP implements IABPor<GameState, GameAction> {
                 }
                 else {
                     if (board[xx][yy] != -1) {
-                        if (board[xx][yy] == view) cnt++;
+                        if (board[xx][yy] == view) 
+                        {
+                            cnt++;
+                            if(cflag) ccnt+=1;
+                            cflag = true;
+                        }
                         else {
                             flag = false;
                             break;
                         }
                     }
+                    else {
+                        cflag = false;
+                    }
                     xx += dx[d];
                     yy += dy[d];
                 }
             }
-            if (flag) score += cnt * cnt * cnt * cnt * cnt;
+            if (flag) score += cnt **5 + ccnt**5;
         }
         return score;
     }
