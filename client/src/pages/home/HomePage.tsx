@@ -111,6 +111,7 @@ class HomePage extends Page<{}, HomePageState> {
                         <button onClick={() => this.setState({ showQuickStartPanel: true })}>Quick Start</button>
                         <button onClick={() => this.setState({ showCreateRoomPanel: true })}>Create Room</button>
                         <button onClick={() => { navigate('/roomlist') }}>Room List</button>
+                        <button onClick={() => { window.open("https://github.com/FlashLizard/gobang.git"); }}>Github</button>
                     </div>
                 </div>
                 {this.state.showCreateRoomPanel && this.renderCreateRoomPanel()}
