@@ -4,7 +4,7 @@ import { Type } from "typescript";
 export type RequestEvent = 'action-pos' | 'abort';
 
 export const RequestPara = {
-    ['action-pos']: new Array<Array<number>>(),
+    ['action-pos']: {board:[[1],],historyActions:[new Array<[number,number]|null>()]},
     ['abort']: null
 };
 

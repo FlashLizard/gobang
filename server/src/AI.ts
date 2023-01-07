@@ -1,6 +1,6 @@
 import { CharacterInfo } from "@root/client/src/communication/parameters";
 import Character, { RequestEvent, RequestPara } from "./Character";
-import { GobangRequest, gobangABP } from "./core/GobangGame";
+import { GobangRequest, GobangABP } from "./core/GobangGame";
 import ABP from "./core/AI/ABP";
 
 class AI extends Character{
@@ -19,8 +19,8 @@ class AI extends Character{
         }
     }
 
-    initialize(turn: number,depth: number = 2) {
-        this.abp = new ABP(gobangABP,turn,depth);
+    initialize(turn: number,depth: number = 3) {
+        this.abp = new ABP(new GobangABP(),turn,depth);
     }
 
     getInfo(): CharacterInfo {
