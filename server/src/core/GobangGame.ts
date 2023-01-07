@@ -5,6 +5,7 @@ import { boardSize, timeout } from "@root/client/src/communication/settings";
 import { IABPor, INF } from "./AI/ABP";
 import { random } from "src/tools/Random";
 import { logger } from "src/tools/ServerLogger";
+import { matrix } from "src/tools/Generate";
 
 const dx = [1, 0, 1, -1]
 const dy = [0, 1, 1, 1]
@@ -40,7 +41,7 @@ class GobangGame extends Game {
     checkResult(board: GameState, turn: number): GameResultInfo | null {
         let re = GobangABP.checkResult(board, turn);
         if (re != null) {
-            return { winner: this.room.charaters[re]?.name };
+            return { player: this.room?.charaters[re]?.name,desc:'win' };
         }
         return null;
     }
@@ -49,20 +50,22 @@ class GobangGame extends Game {
         return { board: this.board, historyActions: this.historyActions };
     }
 
-    async start(): Promise<GameResultInfo> {
+    async run(): Promise<GameResultInfo> {
         let turn = 0;
-        let charaters = this.room.charaters;
+        let charaters = this.room?.charaters;
+        if(!charaters) return {player:null};
         let result: GameResultInfo | null;
         while (true) {
             let pos: [number, number] | null = await charaters[turn]?.request('action-pos', this.getInfo(), timeout);
+            logger.info(`${turn} action ${pos}`);
             if (pos) {
                 this.board[pos[0]][pos[1]] = turn;
                 this.historyActions[turn].shift();
                 this.historyActions[turn].push(pos);
-                this.room.emit('game-info', { board: this.board })
+                this.emitInfo();
             }
             else {
-                result = { winner: charaters[turn ^ 1]?.name };
+                result = { player: charaters[turn ^ 1]?.name,desc:'win' };
                 break;
             }
             result = this.checkResult({ board: this.board, historyActions: this.historyActions }, turn);
@@ -71,7 +74,6 @@ class GobangGame extends Game {
             }
             turn ^= 1;
         }
-        this.end();
         return result;
     }
 }
@@ -83,11 +85,11 @@ export interface GobangRequest {
 export class GobangABP implements IABPor<GameState, GameAction> {
 
 
-    getSlotScore(gameState: GameState, x: number, y: number, turn:number,view: number): number { //myTurn: 如果是我导致了当前局面, 则为真
+    getSlotScore(gameState: GameState, x: number, y: number, turn: number, view: number): number { //myTurn: 如果是我导致了当前局面, 则为真
         let score = 0;
         let board = gameState.board;
         for (let d in dx) {
-            let cnt = turn == view ? 0:1;
+            let cnt = 0;
             let ccnt = 0
             let cflag = false;
             let flag = true;
@@ -116,13 +118,42 @@ export class GobangABP implements IABPor<GameState, GameAction> {
                     yy += dy[d];
                 }
             }
-            if (flag)
-            {
-                if(cnt==5) return INF;
-                score += cnt ** 5 + ccnt ** 5;
+            if (flag) {
+                // if (cnt == 4 && view != turn) {//我有四个了, 同时下一个回合是我的回合
+                //     return INF;
+                // }
+                score += Math.floor(cnt ** 5.5) + Math.floor((ccnt * 0.3) ** 5);
             }
         }
         return score;
+    }
+
+    getSet(gameState: GameState): [number, number][] {
+        let board = gameState.board;
+        let b = matrix(boardSize, boardSize, false);
+        let set: [number, number][] = []
+        for (let i = 0; i < boardSize; i++) {
+            for (let j = 0; j < boardSize; j++) {
+                if (board[i][j] != -1) {
+                    let vb = Math.max(0, i - 2);
+                    let hb = Math.max(0, j - 2);
+                    let ve = Math.min(boardSize - 1, i + 2);
+                    let he = Math.min(boardSize - 1, j + 2);
+                    for (let k = vb; k <= ve; k++) {
+                        for (let l = hb; l <= he; l++) {
+                            if (board[k][l] == -1 && !b[k][l]) {
+                                b[k][l] = true;
+                                set.push([k, l]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (set.length == 0) {
+            set.push([random(2, boardSize - 3), random(2, boardSize - 3)]);
+        }
+        return set;
     }
 
     getRange(gameState: GameState): [number, number, number, number] {
@@ -152,24 +183,6 @@ export class GobangABP implements IABPor<GameState, GameAction> {
         t = Math.max(t - 1, 0);
         b = Math.min(b + 1, boardSize - 1);
 
-        if (r - l <= 5) {
-            let w = 5 - (r - l);
-            if (l >= w) l -= w;
-            else {
-                w -= l;
-                l = 0;
-                r += w;
-            }
-        }
-        if (b - t <= 5) {
-            let w = 5 - (b - t);
-            if (t >= w) t -= w;
-            else {
-                w -= t;
-                t = 0;
-                b += w;
-            }
-        }
         return [l, r, t, b];
     }
 
@@ -195,27 +208,27 @@ export class GobangABP implements IABPor<GameState, GameAction> {
     estimate2(gameState: GameState, turn: number, view: number): number {
         let score = 0;
         let historyActions = gameState.historyActions;
-        
+
         historyActions[turn].forEach((v, i) => {
             if (v) {
                 for (let d in dx) {
                     let b = this.getRelativeSlot(v, Number(d), 4, true);
                     let e = this.getRelativeSlot(v, Number(d), 2, false);
-                    for (let p = b; p[0] != e[0] + 1 && p[1] != e[1] + 1; ) {
-                        score += this.getSlotScore(gameState, p[0], p[1], turn,view)*i*0.5;
+                    for (let p = b; p[0] != e[0] + 1 && p[1] != e[1] + 1;) {
+                        score += this.getSlotScore(gameState, p[0], p[1], turn, view) * i * 0.5;
                         p[0] += dx[d];
                         p[1] += dy[d];
                     }
                 }
             }
         })
-        historyActions[turn^1].forEach((v, i) => {
+        historyActions[turn ^ 1].forEach((v, i) => {
             if (v) {
                 for (let d in dx) {
                     let b = this.getRelativeSlot(v, Number(d), 4, true);
                     let e = this.getRelativeSlot(v, Number(d), 2, false);
-                    for (let p = b; p[0] != e[0] + 1 && p[1] != e[1] + 1; ) {
-                        score -= this.getSlotScore(gameState, p[0], p[1], turn,view^1)*i*0.5;
+                    for (let p = b; p[0] != e[0] + 1 && p[1] != e[1] + 1;) {
+                        score -= this.getSlotScore(gameState, p[0], p[1], turn, view ^ 1) * i * 0.5;
                         p[0] += dx[d];
                         p[1] += dy[d];
                     }
@@ -288,19 +301,35 @@ export class GobangABP implements IABPor<GameState, GameAction> {
         return -1;
     }
     * branches(originState: GameState, turn: number) {
-        let [l, r, t, b] = this.getRange(originState);
         let tmp = JSON.parse(JSON.stringify(originState)) as GameState;
-        for (let i = t; i <= b; i++) {
-            for (let j = l; j <= r; j++) {
-                if (originState.board[i][j] == -1) {
-                    tmp.board[i][j] = turn;
-                    let tmph = JSON.parse(JSON.stringify(tmp.historyActions)) as HistoryActions;
-                    tmp.historyActions[turn].shift();
-                    tmp.historyActions[turn].push([i, j]);
-                    yield { state: tmp as GameState, action: [i, j] as GameAction };
-                    tmp.historyActions = tmph;
-                    tmp.board[i][j] = -1;
+        if (false) {
+            let [l, r, t, b] = this.getRange(originState);
+            for (let i = t; i <= b; i++) {
+                for (let j = l; j <= r; j++) {
+                    if (originState.board[i][j] == -1) {
+                        tmp.board[i][j] = turn;
+                        let tmph = JSON.parse(JSON.stringify(tmp.historyActions)) as HistoryActions;
+                        tmp.historyActions[turn].shift();
+                        tmp.historyActions[turn].push([i, j]);
+                        yield { state: tmp as GameState, action: [i, j] as GameAction };
+                        tmp.historyActions = tmph;
+                        tmp.board[i][j] = -1;
+                    }
                 }
+            }
+        }
+        else {
+            let set = this.getSet(originState);
+            for (let v of set) {
+                let i = v[0];
+                let j = v[1];
+                tmp.board[i][j] = turn;
+                let tmph = JSON.parse(JSON.stringify(tmp.historyActions)) as HistoryActions;
+                tmp.historyActions[turn].shift();
+                tmp.historyActions[turn].push([i, j]);
+                yield { state: tmp as GameState, action: [i, j] as GameAction };
+                tmp.historyActions = tmph;
+                tmp.board[i][j] = -1;
             }
         }
     }

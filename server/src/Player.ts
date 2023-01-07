@@ -10,10 +10,12 @@ import { CharacterInfo } from "@root/client/src/communication/parameters";
 import GobangGame from "./core/GobangGame";
 import gameManager from "./GameManager";
 import { isThisTypeNode } from "typescript";
+import { bindLoginListener } from "./App";
 
 class Player extends Character {
+    isConnected: boolean
     private _room: Room | null = null
-    socket: Socket
+    socket: Socket | null = null
     private _game: Game | null = null
 
     constructor(name: string, socket: Socket) {
@@ -25,10 +27,11 @@ class Player extends Character {
         this.setOn();
         this.type = 'Player';
         this.ok = false;
+        this.isConnected = true;
     }
 
     public set game(value: Game | null) {
-        if(value == null) this.ok = false;
+        if (value == null) this.ok = false;
         this._game = value;
     }
 
@@ -37,13 +40,28 @@ class Player extends Character {
     }
 
     public set room(value) {
-        if(value != this._room) this.ok = false;
-        this.emit('room-info');
+        if (value != this._room) this.ok = false;
         this._room = value;
+        this.emit('room-info',this.room?.getInfo());
     }
 
     public get room() {
         return this._room;
+    }
+
+    connect() {
+        this.isConnected = true;
+        this.game = null;
+        this.room = null;
+    }
+
+    disconnect() {
+        logger.info(`Player ${this.name} disconnected`);
+        this.socket?.removeAllListeners();
+        if(this.socket) bindLoginListener(this.socket);
+        this.socket = null;
+        this.isConnected = false;
+        this.room?.exitPlayer(this);
     }
 
     getInfo(): CharacterInfo {
@@ -67,14 +85,14 @@ class Player extends Character {
             }
         }
         else {
-            this.socket.emit('response-start-game', { code: false, desc: "Not In A Room" });
+            this.socket?.emit('response-start-game', { code: false, desc: "Not In A Room" });
         }
     }
 
     setOn() {
         this.on('start-game', this.startGame)
         this.on('kick-player', (para: number) => {
-            this.room?.changeCharacter(para, null);
+            this.room?.exitPlayer(para);
         })
         this.on('change-charater-type', (para: number) => {
             this.room?.changeCharacterType(para);
@@ -93,7 +111,7 @@ class Player extends Character {
             }
         })
         this.on('quick-game', (turn: number) => {
-            let room = roomManager.createRoom(Math.floor(Math.random()*1000).toString(), this.name);
+            let room = roomManager.createRoom(Math.floor(Math.random() * 1000).toString(), this.name);
             this.ok = true;
             if (turn == 0) {
                 this.joinRoom(room);
@@ -112,20 +130,12 @@ class Player extends Character {
             this.emit('room-list', roomManager.getRoomList());
         });
         this.on('get-game-info', () => {
-            if (this.game) {
-                this.emit('game-info', this.game.getInfo());
-            }
-            else {
-                this.emit('game-info', null);
-            }
+            this.emit('game-info', this.game?.getInfo());
         })
         this.on('exit-room', () => {
-            if (this.room) {
-                let index = this.room.charaters.indexOf(this);
-                if(index != -1 ) this.room.changeCharacter(index, null);
-            }
+            this.room?.exitPlayer(this);
         })
-        this.on('change-ok', (para:boolean)=>{
+        this.on('change-ok', (para: boolean) => {
             this.ok = para;
             this.room?.emitInfo();
         })
@@ -137,10 +147,10 @@ class Player extends Character {
     }
 
     on(event: string, callback: (para: any) => any) {
-        this.socket.on(event, callback);
+        this.socket?.on(event, callback);
     }
 
-    joinRoom(room: string | Room) {
+    joinRoom(room: string | Room | undefined) {
         if (typeof room == 'string') {
             if (this.room) {
                 this.emit('response-join-room', { code: false, desc: 'AlreadyInOtherRoom' });
@@ -174,27 +184,27 @@ class Player extends Character {
             }
             time *= 1000;
             let timer = setInterval(() => {
-                if(showTime) this.emit('rest-time', time / 1000, false);
+                if (showTime) this.emit('rest-time', time / 1000, false);
                 if (time <= 0) {
-                    if(showTime) this.emit('time-out', { event: event });
-                    this.socket.removeAllListeners('resolve-' + event);
+                    if (showTime) this.emit('time-out', { event: event });
+                    this.socket?.removeAllListeners('resolve-' + event);
                     clearInterval(timer);
                     res(null);
                 }
                 time -= 1000;
             }, 1000);
-            this.socket.once('resolve-' + event, (para: any) => {
+            this.socket?.once('resolve-' + event, (para: any) => {
                 res(para);
                 clearInterval(timer);
                 this.emit('action-finished');
             })
-            this.socket.emit(event, para);
+            this.socket?.emit(event, para);
         })
     }
 
     emit(event: string, para?: any, showInLog: boolean = true) {
         if (showInLog) logger.info('Player ' + this.name + ' Emit Event: ' + event + ` ${para}`);
-        this.socket.emit(event, para);
+        this.socket?.emit(event, para);
     }
 }
 

@@ -7,8 +7,12 @@ import './GamePage.css'
 import socket from "../../communication/socket";
 import NavigateButton from "../../components/NavigateButton";
 import navigate from "../../components/GetNavigate";
-import {boardSize} from '../../communication/settings'
+import { boardSize } from '../../communication/settings'
+import boardcast from "../../tools/broadcast";
+import { loginCheck } from "../../components/login/Login";
+import CancelButton from "../../components/cancel/CancelButton";
 
+let canAction: boolean = false;
 
 interface GamePageState {
     board: number[][]
@@ -38,29 +42,39 @@ class GamePage extends Page<{}, GamePageState> {
     }
 
     componentDidMount(): void {
+        loginCheck();
         console.log("enter game");
-        on(this,'game-info', (gameInfo: GobangGameInfo) => {
+        canAction = false;
+        on(this, 'game-info', (gameInfo: GobangGameInfo) => {
             console.log('game-info', gameInfo);
+            if (gameInfo == null) {
+                boardcast.alert('You are not in a game');
+                navigate('/');
+                return;
+            }
             this.setState({ board: gameInfo.board });
         });
-        on(this,'rest-time', (para: number) => {
+        on(this, 'rest-time', (para: number) => {
             this.setState({ restTime: para });
         });
-        on(this,'action-finished', () => {
+        on(this, 'action-finished', () => {
             this.setState({ restTime: null });
         });
-        on(this,'time-out', () => {
+        on(this, 'time-out', () => {
             this.setState({ restTime: null });
         });
-        on(this,'game-end', (para: GameResultInfo) => {
+        on(this, 'game-end', (para: GameResultInfo) => {
             console.log('game-end', para);
             this.setState({ showGameEndPanel: true, result: para });
         });
-        socket.emit('get-game-info');
+        on(this, 'action-pos', () => {
+            canAction = true;
+        })
+        setTimeout(() => socket.emitWithLogin('get-game-info'), 100);
     }
 
     componentWillUnmount(): void {
-        socket.emit('resolve-abort');
+        socket.emitWithLogin('resolve-abort');
         off(this);
     }
 
@@ -74,9 +88,9 @@ class GamePage extends Page<{}, GamePageState> {
                 <div
                     className={'panel'}
                 >
-                    <div className="cancel" onClick={() => this.setState({ showGameEndPanel: false })}></div>
-                    <h3>Game End</h3>
-                    <h4>{!result.winner ? `No Winner` : `${result.winner} is Winner`}</h4>
+                    <CancelButton onClick={() => this.setState({ showGameEndPanel: false })}></CancelButton>
+                    <h3 className="title">Game End</h3>
+                    <h4>{!result.player ? `No Winner` : `${result.player} is Winner`}</h4>
                     <div
                         className="buttonGroup"
                     >
@@ -96,14 +110,16 @@ class GamePage extends Page<{}, GamePageState> {
 
         return (
             <div>
-                <h1>Gobang Game</h1>
-                {this.state.restTime ?
-                    <h2>{`Your Turn: ${this.state.restTime} seconds rest`}</h2> :
-                    <h2>{`Others' Turn`}</h2>
-                }
-                <NavigateButton to='/'>Back To Home</NavigateButton>
-                <Board boardInfo={{ board: this.state.board }}></Board>
                 {this.state.showGameEndPanel && this.gameEndPanel()}
+                <div className="gamePanel">
+                    <div className="title">Gobang Game</div>
+                    {this.state.restTime ?
+                        <div>{`Your Turn: ${this.state.restTime} seconds rest`}</div> :
+                        <div>{`Others' Turn`}</div>
+                    }
+                    <NavigateButton to='/'>Back To Home</NavigateButton>
+                    <Board boardInfo={{ board: this.state.board }}></Board>
+                </div>
             </div>
         )
     }
@@ -120,7 +136,10 @@ class Board extends React.Component<BoardProp> {
     }
 
     onClickSlot(pos: [number, number]) {
-        socket.emit('resolve-action-pos', pos);
+        if (canAction) {
+            socket.emitWithLogin('resolve-action-pos', pos);
+            canAction = false;
+        }
     }
 
     render(): React.ReactNode {

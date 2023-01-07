@@ -2,30 +2,42 @@ import Room from "./Room";
 import {RoomInfo} from "@communication/parameters"
 import { logger } from "./tools/ServerLogger";
 
-interface StringArray<T> {
-    [index:string]: T,
-}
-
 const roomManager: {
-    rooms: StringArray<Room>
+    rooms: Map<string,Room>
     createRoom(name: string,host: string): Room
-    getRoom(name: string) : Room
+    getRoom(name: string) : Room|undefined
     getRoomList(): RoomInfo[]
+    removeRoom(room: string|Room):boolean
 } = {
-    rooms: {},
+    rooms: new Map(),
     createRoom(name: string, host: string) {
         logger.info('createRoom ',name);
-        return this.rooms[name] = new Room(name,host);
+        let room = new Room(name,host)
+        this.rooms.set(name, room);
+        return room;
     },
     getRoom(name: string) {
-        return this.rooms[name];
+        return this.rooms.get(name);
     },
     getRoomList() {
         let result: RoomInfo[] = []
-        for(let i in this.rooms) {
-            result.push(this.rooms[i].getInfo());
+        for(let r of this.rooms.values()) {
+            result.push(r.getInfo());
         }
         return result;
+    },
+    removeRoom(room) {
+        if(room instanceof Room) {
+            for(let i of this.rooms.keys()) {
+                if(this.rooms.get(i)==room) {
+                    return this.rooms.delete(i);
+                }
+            }
+            return false;
+        }
+        else {
+            return this.rooms.delete(room);
+        }
     },
 };
 

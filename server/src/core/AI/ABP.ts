@@ -18,7 +18,7 @@ class ABP<GameState, GameAction> {
     depth: number
     view: number
 
-    constructor(game: IABPor<GameState, GameAction>, view: number, depth: number = 3) {
+    constructor(game: IABPor<GameState, GameAction>, view: number, depth: number = 2) {
         this.gameABP = game;
         this.depth = depth;
         this.view = view;
@@ -74,7 +74,11 @@ class ABP<GameState, GameAction> {
                 break;
             }
         }
-        if(choices.length==0) return null;
+
+        if(choices.length==0){
+            logger.error(`${score}`);
+            return null;
+        }
         let action = choices[random(0,choices.length-1)]
         logger.info(`action ${score} ${action}`)
         return action;

@@ -8,6 +8,7 @@ export type GameType = 'Gobang';
 const gameManager: {
     games: Game[]
     createGame(type: GameType, room: Room): Game | null
+    removeGame(game:Game): boolean
 } = {
     games: [],
     createGame(type: GameType, room: Room): Game | null {
@@ -21,13 +22,17 @@ const gameManager: {
         }
         if (game) {
             this.games.push(game);
-            setTimeout(async () => {
-                let result = await game!.startWithAbort();
-                room.emit('game-end',result);
-                delete this.games[this.games.indexOf(game!)];
+            setTimeout(() => {
+                game?.startWithAbort();
             }, 500);
         }
         return game;
+    },
+    removeGame(game:Game) {
+        let index = this.games.indexOf(game);
+        if(index==-1) return false;
+        if(this.games.splice(index).length==0) return false;
+        return true;
     }
 };
 

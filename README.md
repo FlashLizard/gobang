@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a web gobang application with lobby feature. I will accomplish login and ai(use $\alpha - \beta$ Pruning Algorithm) features soon.
+This is a web gobang application with lobby feature. I have accomplished login and ai(use $\alpha - \beta$ Pruning Algorithm) features soon.
 
 ## How To Deploy
 

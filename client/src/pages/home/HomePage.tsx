@@ -1,11 +1,13 @@
 import React, { useContext } from "react";
 import Page from "../Page";
 import "../Page.css"
+import "./HomePage.css"
 import socket, { off, on } from "../../communication/socket";
 import NavigateButton from "../../components/NavigateButton";
 import navigate from "../../components/GetNavigate";
 import { ResponseInfo } from "../../communication/parameters";
 import boardcast from "../../tools/broadcast";
+import CancelButton from "../../components/cancel/CancelButton";
 interface HomePageState {
     showCreateRoomPanel: boolean
     showQuickStartPanel: boolean
@@ -19,18 +21,18 @@ class HomePage extends Page<{}, HomePageState> {
         this.state = {
             showCreateRoomPanel: false,
             showQuickStartPanel: false,
-            roomName: Math.floor(Math.random()*1000).toString(),
+            roomName: Math.floor(Math.random() * 1000).toString(),
         }
     }
 
     componentDidMount(): void {
-        socket.emit('exit-room');
-        on(this,'response-create-room',(para:ResponseInfo)=>{
+        socket.emitWithLogin('exit-room');
+        on(this, 'response-create-room', (para: ResponseInfo) => {
             boardcast.alert(para.desc);
         });
-        on(this,'response-join-room',(para:ResponseInfo)=>{
+        on(this, 'response-join-room', (para: ResponseInfo) => {
             boardcast.alert(para.desc);
-            if(para.code) {
+            if (para.code) {
                 navigate('/room');
             }
         })
@@ -43,7 +45,7 @@ class HomePage extends Page<{}, HomePageState> {
     QuickGameButton(props: { turn: number, children?: any }) {
         return (
             <NavigateButton to='/game' onClick={() =>
-                socket.emit('quick-game', props.turn)}
+                socket.emitWithLogin('quick-game', props.turn)}
             > {props.children}</NavigateButton >
         )
     }
@@ -56,8 +58,8 @@ class HomePage extends Page<{}, HomePageState> {
                 <div
                     className={'panel'}
                 >
-                    <div className="cancel" onClick={() => this.setState({ showQuickStartPanel: false })}></div>
-                    <h3>Choose Your Turn</h3>
+                    <CancelButton onClick={() => this.setState({ showQuickStartPanel: false })}></CancelButton>
+                    <h3 className="title">Choose Your Turn</h3>
                     <div
                         className="buttonGroup"
                     >
@@ -78,9 +80,9 @@ class HomePage extends Page<{}, HomePageState> {
                 <div
                     className={'panel'}
                 >
-                    <div className="cancel" onClick={() => this.setState({ showCreateRoomPanel: false })}></div>
-                    <h3>Create Room</h3>
-                    <div> Name:
+                    <CancelButton onClick={() => this.setState({ showCreateRoomPanel: false })}></CancelButton>
+                    <h3 className="title">Create Room</h3>
+                    <div>Name:
                         <input
                             onChange={(e) => this.setState({ roomName: e.target.value })}
                             value={this.state.roomName}>
@@ -90,7 +92,7 @@ class HomePage extends Page<{}, HomePageState> {
                         className="buttonGroup"
                     >
                         <button onClick={() => {
-                            socket.emit('create-room',this.state.roomName);
+                            socket.emitWithLogin('create-room', this.state.roomName);
                         }}>Create</button>
                         <button onClick={() => this.setState({ showCreateRoomPanel: false })}>Cancel</button>
                     </div>
@@ -102,12 +104,18 @@ class HomePage extends Page<{}, HomePageState> {
     render(): React.ReactNode {
         return (
             <div>
-                <h1>Gobang Game</h1>
-                <button onClick={() => this.setState({ showQuickStartPanel: true })}>Quick Start</button>
-                <button onClick={() => this.setState({ showCreateRoomPanel: true })}>Create Room</button>
-                <button onClick={() => { navigate('/roomlist') }}>Room List</button>
+
+                <h1 className="title">Gobang Game</h1>
+                <div className="homePanel">
+                    <div>
+                        <button onClick={() => this.setState({ showQuickStartPanel: true })}>Quick Start</button>
+                        <button onClick={() => this.setState({ showCreateRoomPanel: true })}>Create Room</button>
+                        <button onClick={() => { navigate('/roomlist') }}>Room List</button>
+                    </div>
+                </div>
                 {this.state.showCreateRoomPanel && this.renderCreateRoomPanel()}
                 {this.state.showQuickStartPanel && this.renderQuickStartPanel()}
+
             </div>
         )
     }

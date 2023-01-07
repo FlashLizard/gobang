@@ -1,0 +1,63 @@
+.roomListPanel {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    align-items: center;
+    padding: 10px;
+    margin: auto;
+}
+
+.gamePanel button {
+    width: fit-content;
+}
+
+table.roomTable {
+    border: 0;
+    max-width: 450px;
+    width: 100%;
+    table-layout: fixed; 
+    max-height: 300px;
+}
+
+/* .roomTable thead,
+.roomTable tbody,
+.roomTable tr,
+.roomTable th,
+.roomTable td {
+    display: inline-block;
+ } */
+
+.roomTable th,
+.roomTable td,
+.roomTable button {
+    border: 2px solid rgb(4, 29, 51);
+    height: 40px;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    min-height: 30px;
+}
+
+.roomTable tbody {
+    background-color: rgb(255, 0, 0);
+    max-height: 260px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.roomTable button {
+    width: fit-content;
+    margin: 2px;
+}
+
+.roomTable th {
+    background-color: aquamarine;
+}
+
+.roomTable td {
+    background-color: rgb(181, 249, 226);
+}
+
+.roomTable tfoot td{
+    background-color: rgb(37, 87, 74);
+}

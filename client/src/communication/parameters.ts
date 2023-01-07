@@ -12,12 +12,12 @@ export interface GobangGameInfo {
 } 
 
 export interface LoginInfo {
-    socketId: string,
     name: string,
 }
 
 export interface GameResultInfo {
-    winner: string | null | undefined,
+    player: string | null | undefined,
+    desc?:string|null|undefined
 }
 
 export interface CharacterInfo {
@@ -31,4 +31,5 @@ export type RequestPara = null | number[][]
 export interface ResponseInfo {
     code: boolean,
     desc: string,
+    others?: string|null|undefined
 }

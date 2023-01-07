@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import Page from "../Page";
+import './RoomListPage.css'
 import { ResponseInfo, RoomInfo } from "../../communication/parameters";
 import socket, { off, on } from "../../communication/socket";
 import NavigateButton from "../../components/NavigateButton";
@@ -21,10 +22,10 @@ class RoomListPage extends Page<{}, RoomListPageState> {
 
     componentDidMount(): void {
 
-        on(this,'room-list', (para: RoomInfo[]) => {
+        on(this, 'room-list', (para: RoomInfo[]) => {
             this.setState({ roomList: para });
         });
-        on(this,'response-join-room', (para: ResponseInfo) => {
+        on(this, 'response-join-room', (para: ResponseInfo) => {
             console.log('response-join-room', para);
             boardcast.alert(para.desc);
             if (para.code) {
@@ -45,19 +46,20 @@ class RoomListPage extends Page<{}, RoomListPageState> {
                 <td>{value.count}/{value.maxCount}</td>
                 <td>
                     <button onClick={() => {
-                        socket.emit('join-room', value.name);
+                        socket.emitWithLogin('join-room', value.name);
                     }}>加入房间</button>
                 </td>
             </tr>)
         })
 
         return (
-            <div>
-                <h1>Room List</h1>
-                <NavigateButton to='/'>Back To Home</NavigateButton>
-                <button onClick={() => socket.emit('get-room-list')}>Fresh</button>
-                <br></br>
-                <table align="center" border={1}>
+            <div className="roomListPanel">
+                <div className="subTitle">Room List</div>
+                <div className="buttonGroup">
+                    <NavigateButton to='/'>Back To Home</NavigateButton>
+                    <button onClick={() => socket.emit('get-room-list')}>Fresh</button>
+                </div>
+                <table className="roomTable" align="center" border={1}>
                     <thead>
                         <tr>
                             <th>名称</th>
@@ -68,7 +70,13 @@ class RoomListPage extends Page<{}, RoomListPageState> {
                     <tbody>
                         {rooms}
                     </tbody>
-
+                    {/* <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot> */}
                 </table>
             </div>
         )

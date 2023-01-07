@@ -1,11 +1,14 @@
 import React from "react";
 import Page from "../Page";
+import "../Page.css"
 import socket, { off, on } from "../../communication/socket";
 import './RoomPage.css'
 import GlobalContext from "../../context/Context";
 import { CharacterInfo, ResponseInfo, RoomInfo } from "../../communication/parameters";
 import navigate from "../../components/GetNavigate";
 import boardcast from "../../tools/broadcast";
+import { nowName } from "../../components/login/Login";
+import { loginCheck } from "../../components/login/Login";
 interface RoomPageState {
     ok: boolean,
     roomName: string,
@@ -14,7 +17,6 @@ interface RoomPageState {
 }
 
 class RoomPage extends Page<{}, RoomPageState> {
-    playerName: string | null
     toGame: boolean
 
     constructor(props: any) {
@@ -25,31 +27,36 @@ class RoomPage extends Page<{}, RoomPageState> {
             list: [null, null],
             host: "None",
         }
-        this.playerName = null;
         this.toGame = false;
         this.changeOk = this.changeOk.bind(this);
     }
 
     componentDidMount(): void {
+        loginCheck();
         console.log('enter room');
         this.toGame = false;
-        on(this,'room-info', (para: RoomInfo) => {
+        on(this, 'room-info', (para: RoomInfo) => {
             console.log('room-info', para);
+            if (para == null) {
+                boardcast.alert('The room does not exist');
+                navigate('/')
+                return;
+            }
             let list = para.list;
             let flag = true;
-            for(let c of list) {
-                if(c && c.name == this.playerName) {
+            for (let c of list) {
+                if (c && c.name == nowName) {
                     flag = false;
                     break;
                 }
             }
-            if(flag) {
+            if (flag) {
                 boardcast.alert('You are kicked out!');
                 navigate('/');
             }
             this.setState({ roomName: para.name, list: list, host: para.host })
         });
-        on(this,'response-start-game', (para: ResponseInfo) => {
+        on(this, 'response-start-game', (para: ResponseInfo) => {
             console.log('response-start-game', para);
             boardcast.alert(para.desc);
             if (para.code) {
@@ -57,14 +64,13 @@ class RoomPage extends Page<{}, RoomPageState> {
                 navigate('/game');
             }
         });
-        socket.emit('get-room-info');
+        setTimeout(() => socket.emitWithLogin('get-room-info'), 100);
     }
 
     componentWillUnmount(): void {
         off(this);
-        if(!this.toGame)
-        {
-            socket.emit('exit-room');
+        if (!this.toGame) {
+            socket.emitWithLogin('exit-room');
         }
     }
 
@@ -78,14 +84,14 @@ class RoomPage extends Page<{}, RoomPageState> {
             return (
                 <tr key={i}>
                     <td>{i}</td>
-                    <td>{value ? value.name : 'Wait'}</td>
-                    <td>{!value ? 'Wait' : (value.ok ? 'Ok' : 'Preparing')}</td>
-                    <td>{value ? value.type : 'Player'}</td>
-                    <td>
-                        {this.playerName == this.state.host &&
+                    <td className="td2">{value ? value.name : '⌛'}</td>
+                    <td>{!value ? '⌛' : (value.ok ? '✔' : '❌')}</td>
+                    <td>{value ? (value.type=='Player'?'🧒':'💻') : '🧒'}</td>
+                    <td className="td5">
+                        {nowName == this.state.host &&
                             (value && value.type == 'Player' ?
-                                <button onClick={() => socket.emit('kick-player', i)}>Kick Out</button> :
-                                <button onClick={() => socket.emit('change-charater-type', i)}>Change Type</button>
+                                <button onClick={() => socket.emitWithLogin('kick-player', i)}>Kick Out</button> :
+                                <button onClick={() => socket.emitWithLogin('change-charater-type', i)}>Change Type</button>
                             )
                         }
                     </td>
@@ -93,36 +99,32 @@ class RoomPage extends Page<{}, RoomPageState> {
             )
         })
         return (
-            <div>
-                <GlobalContext.Consumer>
-                    {({ name }) => {
-                        if (this.playerName != name) {
-                            console.log(name);
-                            this.playerName = name;
-                        };
-                        return null;
-                    }}
-                </GlobalContext.Consumer>
-                <h1>{`Room: ${this.state.roomName}`}</h1>
-                <h2>{`Host: ${this.state.host}`}</h2>
-                <button onClick={()=>navigate('/')}>Back To Home</button>
-                {
-                    this.playerName == this.state.host ?
-                        <button onClick={() => socket.emit('start-game')}>Start Game</button> :
-                        <button onClick={this.changeOk} className={this.state.ok ? 'ok' : 'preparing'}>
-                            {this.state.ok ? 'Ok' : 'Preparing'}
-                        </button>
+            <div className="wrapper roomPanel">
+                <div className="title">Gobang Game</div>
+                <div className="horizontalWrapper">
+                    <div>{`Room: ${this.state.roomName}`}</div>
+                    <div>{`Host: ${this.state.host}`}</div>
+                </div>
+                <div className="horizontalWrapper">
+                    <button onClick={() => navigate('/')}>Back</button>
+                    {
+                        nowName == this.state.host ?
+                            <button onClick={() => socket.emitWithLogin('start-game')}>Start</button> :
+                            <button onClick={this.changeOk} className={this.state.ok ? 'ok' : 'preparing'}>
+                                {this.state.ok ? 'Ok' : 'Prepare'}
+                            </button>
 
-                }
-                <button onClick={() => socket.emit('get-room-info')}>Fresh</button>
+                    }
+                    <button onClick={() => socket.emitWithLogin('get-room-info')}>Fresh</button>
+                </div>
                 <table className='room'>
                     <thead>
                         <tr>
-                            <th>序号</th>
-                            <th>名称</th>
-                            <th>状态</th>
-                            <th>类型</th>
-                            <th>操作</th>
+                            <th id='th1'>序号</th>
+                            <th id='th2'>名称</th>
+                            <th id='th3'>状态</th>
+                            <th id='th4'>类型</th>
+                            <th id='th5'>操作</th>
                         </tr>
                     </thead>
                     <tbody>

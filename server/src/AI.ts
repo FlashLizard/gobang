@@ -19,7 +19,7 @@ class AI extends Character{
         }
     }
 
-    initialize(turn: number,depth: number = 3) {
+    initialize(turn: number,depth: number = 2) {
         this.abp = new ABP(new GobangABP(),turn,depth);
     }
 

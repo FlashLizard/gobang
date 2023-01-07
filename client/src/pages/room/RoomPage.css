@@ -1,6 +1,8 @@
 table.room
 {
     margin:auto;
+    width: 100%;
+    max-width: 400px;
 }
 .room th
 {
@@ -12,4 +14,44 @@ table.room
     border: 2px solid black;
     text-align:center;
     vertical-align: middle;
+    height: 30px;
+}
+
+#th1 {
+    width: fit-content;
+}
+
+#th2 {
+    width: fit-content;
+}
+
+#th3 {
+    width: fit-content;
+}
+
+#th4 {
+    width: fit-content;
+}
+
+#th5 {
+    min-width: 70px;
+    max-width: 70px;
+    width: fit-content;
+}
+
+.td2 {
+    min-width: 50px;
+    max-width: 50px;
+    width: fit-content;
+}
+
+.td5 {
+    min-width: 70px;
+    max-width: 70px;
+    width: fit-content;
+}
+
+.room button {
+    width: fit-content;
+    font-size: 10px;
 }

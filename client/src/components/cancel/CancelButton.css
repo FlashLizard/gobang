@@ -1,0 +1,24 @@
+.cancel {
+    transition: all 0.2s;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    background-color: rgb(127, 255, 212);
+    display: inline-block;
+    text-align: center;
+    margin: 0;
+}
+
+
+.cancel:hover {
+    background-color: rgb(90, 180, 180);
+}
+
+.cancel:active {
+    background-color: rgb(60, 120, 120);
+}
+
+.cancel::after {
+    content: "✖";
+    color: aliceblue;
+}

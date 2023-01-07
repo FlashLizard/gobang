@@ -1,5 +1,4 @@
 import './broadcast.css'
-import ReactDOM from "react-dom";
 
 export let config = {
     interval: 400,
