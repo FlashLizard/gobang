@@ -116,7 +116,6 @@ class HomePage extends Page<{}, HomePageState> {
                 </div>
                 {this.state.showCreateRoomPanel && this.renderCreateRoomPanel()}
                 {this.state.showQuickStartPanel && this.renderQuickStartPanel()}
-
             </div>
         )
     }

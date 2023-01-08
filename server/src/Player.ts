@@ -24,6 +24,7 @@ class Player extends Character {
         this.socket = socket;
         this.joinRoom = this.joinRoom.bind(this);
         this.startGame = this.startGame.bind(this);
+        this.watchGame = this.watchGame.bind(this);
         this.setOn();
         this.type = 'Player';
         this.ok = false;
@@ -42,7 +43,7 @@ class Player extends Character {
     public set room(value) {
         if (value != this._room) this.ok = false;
         this._room = value;
-        this.emit('room-info',this.room?.getInfo());
+        this.emit('room-info', this.room?.getInfo());
     }
 
     public get room() {
@@ -58,7 +59,7 @@ class Player extends Character {
     disconnect() {
         logger.info(`Player ${this.name} disconnected`);
         this.socket?.removeAllListeners();
-        if(this.socket) bindLoginListener(this.socket);
+        if (this.socket) bindLoginListener(this.socket);
         this.socket = null;
         this.isConnected = false;
         this.room?.exitPlayer(this);
@@ -73,9 +74,15 @@ class Player extends Character {
     }
 
     startGame() {
-        this.ok = true;
         if (this.room) {
-            this.game = gameManager.createGame('Gobang', this.room);
+            if (this.room.playerCount() > 0) {
+                this.ok = true;
+                this.game = gameManager.createGame('Gobang', this.room);
+            }
+            else {
+                this.game = gameManager.createGame('Gobang', this.room);
+                this.room.addAudienceToGame(this);
+            }
             if (this.game) {
                 this.room.emit('response-start-game', { code: true, desc: 'Success' });
             }
@@ -94,9 +101,13 @@ class Player extends Character {
         this.on('kick-player', (para: number) => {
             this.room?.exitPlayer(para);
         })
-        this.on('change-charater-type', (para: number) => {
+        this.on('change-turn', (para:number) => {
+            this.room?.changeTurn(this,para);
+        })
+        this.on('change-character-type', (para: number) => {
             this.room?.changeCharacterType(para);
         })
+        this.on('watch-game', this.watchGame)
         this.on('join-room', this.joinRoom)
         this.on('create-room', (name: string) => {
             logger.info(`Player ${this.name} try to create room ${name}`);
@@ -105,13 +116,13 @@ class Player extends Character {
             }
             else {
                 this.emit('response-create-room', { code: true, desc: 'Success' })
-                let room = roomManager.createRoom(name, this.name);
+                let room = roomManager.createRoom(name, this);
                 this.ok = false;
                 this.joinRoom(room);
             }
         })
         this.on('quick-game', (turn: number) => {
-            let room = roomManager.createRoom(Math.floor(Math.random() * 1000).toString(), this.name);
+            let room = roomManager.createRoom(Math.floor(Math.random() * 1000).toString(), this);
             this.ok = true;
             if (turn == 0) {
                 this.joinRoom(room);
@@ -150,6 +161,16 @@ class Player extends Character {
         this.socket?.on(event, callback);
     }
 
+    watchGame(name: string) {
+        let room = roomManager.getRoom(name);
+        if (room?.addAudienceToGame(this)) {
+            this.emit('response-watch-game', { code: true, desc: 'Success' });
+        }
+        else {
+            this.emit('response-watch-game', { code: false, desc: 'Fail To Watch The Game' });
+        }
+    }
+
     joinRoom(room: string | Room | undefined) {
         if (typeof room == 'string') {
             if (this.room) {
@@ -159,7 +180,7 @@ class Player extends Character {
             room = roomManager.getRoom(room);
         }
         if (room) {
-            if (room.isInGame) {
+            if (room.game) {
                 this.emit('response-join-room', { code: false, desc: 'RoomIsInGame' });
                 return;
             }

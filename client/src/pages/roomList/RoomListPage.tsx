@@ -32,6 +32,12 @@ class RoomListPage extends Page<{}, RoomListPageState> {
                 navigate('/room');
             }
         });
+        on(this,'response-watch-game',(para:ResponseInfo)=>{
+            boardcast.alert(para.desc);
+            if(para.code) {
+                navigate('/game');
+            }
+        })
         socket.emit('get-room-list');
     }
 
@@ -45,9 +51,12 @@ class RoomListPage extends Page<{}, RoomListPageState> {
                 <td>{value.name}</td>
                 <td>{value.count}/{value.maxCount}</td>
                 <td>
+                    {value.isIngame? <button onClick={() => {
+                        socket.emitWithLogin('watch-game', value.name);
+                    }}>Watch</button>:
                     <button onClick={() => {
                         socket.emitWithLogin('join-room', value.name);
-                    }}>加入房间</button>
+                    }}>Join</button>}
                 </td>
             </tr>)
         })

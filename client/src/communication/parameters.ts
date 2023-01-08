@@ -1,3 +1,4 @@
+
 export interface RoomInfo {
     name: string,
     list: (CharacterInfo | null)[],
@@ -9,6 +10,8 @@ export interface RoomInfo {
 
 export interface GobangGameInfo {
     board: number[][]
+    historyActions: ([number,number]|null|undefined)[][]
+    turn: number
 } 
 
 export interface LoginInfo {

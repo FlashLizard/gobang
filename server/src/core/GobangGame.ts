@@ -6,6 +6,8 @@ import { IABPor, INF } from "./AI/ABP";
 import { random } from "src/tools/Random";
 import { logger } from "src/tools/ServerLogger";
 import { matrix } from "src/tools/Generate";
+import Player from "src/Player";
+import { rejections } from "winston";
 
 const dx = [1, 0, 1, -1]
 const dy = [0, 1, 1, 1]
@@ -13,7 +15,7 @@ const dy = [0, 1, 1, 1]
 
 type GameAction = [number, number];
 type HistoryActions = (GameAction | null)[][];
-type GameState = { board: number[][], historyActions: HistoryActions };
+type GameState = { board: number[][], historyActions: HistoryActions,turn?:number };
 const historyNum = 6;
 
 class GobangGame extends Game {
@@ -35,7 +37,7 @@ class GobangGame extends Game {
     }
 
     static check(room: Room) {
-        return room.okCount() == 2 && !room.isInGame;
+        return room.okCount() == 2 && !room.game;
     }
 
     checkResult(board: GameState, turn: number): GameResultInfo | null {
@@ -46,8 +48,16 @@ class GobangGame extends Game {
         return null;
     }
 
-    getInfo(): GameState {
-        return { board: this.board, historyActions: this.historyActions };
+    emitStartInfo(): void {
+        this.room?.charaters.forEach((v,i)=>{
+            if(v instanceof Player) {
+                v.emit('start-info',i);
+            }
+        })
+    }
+
+    getInfo(turn:number): GameState {
+        return { board: this.board, historyActions: this.historyActions,turn:turn };
     }
 
     async run(): Promise<GameResultInfo> {
@@ -56,13 +66,14 @@ class GobangGame extends Game {
         if(!charaters) return {player:null};
         let result: GameResultInfo | null;
         while (true) {
-            let pos: [number, number] | null = await charaters[turn]?.request('action-pos', this.getInfo(), timeout);
+            let pos: [number, number] | null = await charaters[turn]?.request('action-pos', this.getInfo(turn), timeout);
             logger.info(`${turn} action ${pos}`);
+            if(charaters[turn]?.type=='AI') await new Promise((resolve, reject)=>setTimeout(()=>resolve(null),1000));
             if (pos) {
                 this.board[pos[0]][pos[1]] = turn;
                 this.historyActions[turn].shift();
                 this.historyActions[turn].push(pos);
-                this.emitInfo();
+                this.emitInfo(turn);
             }
             else {
                 result = { player: charaters[turn ^ 1]?.name,desc:'win' };

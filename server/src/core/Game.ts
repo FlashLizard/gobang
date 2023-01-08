@@ -7,10 +7,11 @@ import { logger } from "src/tools/ServerLogger";
 
 abstract class Game {
     room: Room|undefined
+    audience: (Player|null|undefined)[]
 
     constructor(room: Room) {
         this.room = room;
-        this.room.isInGame = true;
+        this.room.game = this
         this.room.charaters.forEach((c, i) => {
             if (c instanceof Player) {
                 c.game = this;
@@ -19,9 +20,10 @@ abstract class Game {
                 c.initialize(i);
             }
         });
+        this.audience = []
     }
 
-    abstract getInfo(): any
+    abstract getInfo(...others:any[]): any
 
     async startWithAbort() {
         let promises = []
@@ -42,6 +44,7 @@ abstract class Game {
             }
         }
         promises.push(new Promise(async (resolve, reject) => {
+            this.emitStartInfo();
             let result = await this.run();
             this.end(result);
             resolve(null);
@@ -49,20 +52,31 @@ abstract class Game {
         return Promise.race(promises);
     }
 
-    emitInfo() {
-        this.room?.emit('game-info', this.getInfo());
+    emitStartInfo() {
+    }
+
+    emitInfo(...para:any[]) {
+        let info = this.getInfo(...para);
+        this.room?.emit('game-info', info);
+        for (let c of this.audience) {
+            c?.emit('game-info',info);
+        }
     }
 
     abstract run(): Promise<GameResultInfo>
 
     end(result: GameResultInfo) {
         if(!this.room) return;
-        this.room.isInGame = false;
+        this.room.game = null;
         for (let c of this.room.charaters) {
             if (c instanceof Player) {
                 c.game = null;
                 c.emit('game-end', result);
             }
+        }
+        for (let c of this.audience) {
+            if(c) c.game = null;
+            c?.emit('game-end', result);
         }
         gameManager.removeGame(this);
     }

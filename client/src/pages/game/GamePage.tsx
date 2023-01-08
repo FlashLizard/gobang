@@ -13,9 +13,11 @@ import { loginCheck } from "../../components/login/Login";
 import CancelButton from "../../components/cancel/CancelButton";
 
 let canAction: boolean = false;
+let view: number|undefined
 
 interface GamePageState {
     board: number[][]
+    recent: [number,number]|undefined|null
     restTime: number | null
     showGameEndPanel: boolean
     result: GameResultInfo | null
@@ -38,6 +40,7 @@ class GamePage extends Page<{}, GamePageState> {
             restTime: null,
             showGameEndPanel: false,
             result: null,
+            recent: null,
         }
     }
 
@@ -52,8 +55,11 @@ class GamePage extends Page<{}, GamePageState> {
                 navigate('/');
                 return;
             }
-            this.setState({ board: gameInfo.board });
+            this.setState({ board: gameInfo.board,recent: typeof gameInfo.turn=='number'?gameInfo.historyActions[gameInfo.turn].pop():null });
         });
+        on(this, 'start-info',(para:number) =>{
+            view = para;
+        })
         on(this, 'rest-time', (para: number) => {
             this.setState({ restTime: para });
         });
@@ -118,7 +124,7 @@ class GamePage extends Page<{}, GamePageState> {
                         <div>{`Others' Turn`}</div>
                     }
                     <NavigateButton to='/'>Back To Home</NavigateButton>
-                    <Board boardInfo={{ board: this.state.board }}></Board>
+                    <Board board={this.state.board} recent={this.state.recent}></Board>
                 </div>
             </div>
         )
@@ -126,7 +132,8 @@ class GamePage extends Page<{}, GamePageState> {
 }
 
 interface BoardProp {
-    boardInfo: GobangGameInfo
+    board: number[][],
+    recent: [number,number]|null|undefined,
 }
 
 class Board extends React.Component<BoardProp> {
@@ -143,13 +150,14 @@ class Board extends React.Component<BoardProp> {
     }
 
     render(): React.ReactNode {
-        let slots = this.props.boardInfo.board.map((row, i) => {
+        let slots = this.props.board.map((row, i) => {
             return (<tr key={i}>
                 {
                     row.map((value, j) => {
                         return value == -1 ?
                             (<td key={j} onClick={() => this.onClickSlot([i, j])}></td>) :
-                            (<td key={j}>
+                            (<td key={j} className={this.props.recent&&i==this.props.recent[0]&&
+                            j==this.props.recent[1]?"recent":""}>
                                 {value == -1 ? " " : (value == 0 ? "⚫" : "⚪")}
                             </td>);
                     })

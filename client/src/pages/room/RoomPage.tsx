@@ -9,6 +9,7 @@ import navigate from "../../components/GetNavigate";
 import boardcast from "../../tools/broadcast";
 import { nowName } from "../../components/login/Login";
 import { loginCheck } from "../../components/login/Login";
+import { Parser } from "acorn";
 interface RoomPageState {
     ok: boolean,
     roomName: string,
@@ -50,7 +51,7 @@ class RoomPage extends Page<{}, RoomPageState> {
                     break;
                 }
             }
-            if (flag) {
+            if (flag && para.host != nowName) {
                 boardcast.alert('You are kicked out!');
                 navigate('/');
             }
@@ -79,6 +80,57 @@ class RoomPage extends Page<{}, RoomPageState> {
         this.setState({ ok: !this.state.ok });
     }
 
+    typeButton(type: string | null | undefined, pName: string | null | undefined, index: number) {
+        let btn;
+        if (this.state.host != nowName) {
+            if (!type || type == 'Player') {
+                btn = <div>🧒</div>
+            }
+            else {
+                btn = <div>💻</div>
+            }
+        } else {
+            if (type) {
+                if (type == 'Player') {
+                    btn = <button className="type" onClick={() => {
+                        if (this.state.host != pName) socket.emitWithLogin('kick-player', index);
+                        socket.emitWithLogin('change-character-type', index);
+                    }}>🧒</button>
+                }
+                else {
+                    btn = <button className="type" onClick={() => {
+                        socket.emitWithLogin('change-character-type', index);
+                    }}>💻</button>
+                }
+            }
+            else {
+                btn = <button className="type" onClick={() => {
+                    socket.emitWithLogin('change-character-type', index);
+                }}>🧒</button>
+            }
+        }
+        return btn;
+    }
+
+    operateButton(type: string | null | undefined, index: number) {
+        let btn;
+        if (this.state.host != nowName) return null;
+        if (type) {
+            if (type == 'Player') {
+                btn = <button onClick={() => socket.emitWithLogin('kick-player', index)}>Kick Out</button>
+            }
+            else {
+                btn = <button onClick={() => socket.emitWithLogin('change-pc-type', index)}>Change PC</button>
+            }
+        }
+        else {
+            btn = <button onClick={() => {
+                socket.emitWithLogin('change-turn', index);
+            }}>Set Mine</button>
+        }
+        return btn;
+    }
+
     render(): React.ReactNode {
         let list = this.state.list.map((value, i) => {
             return (
@@ -86,14 +138,11 @@ class RoomPage extends Page<{}, RoomPageState> {
                     <td>{i}</td>
                     <td className="td2">{value ? value.name : '⌛'}</td>
                     <td>{!value ? '⌛' : (value.ok ? '✔' : '❌')}</td>
-                    <td>{value ? (value.type=='Player'?'🧒':'💻') : '🧒'}</td>
+                    <td>
+                        {this.typeButton(value?.type, value?.name, i)}
+                    </td>
                     <td className="td5">
-                        {nowName == this.state.host &&
-                            (value && value.type == 'Player' ?
-                                <button onClick={() => socket.emitWithLogin('kick-player', i)}>Kick Out</button> :
-                                <button onClick={() => socket.emitWithLogin('change-charater-type', i)}>Change Type</button>
-                            )
-                        }
+                        {this.operateButton(value?.type, i)}
                     </td>
                 </tr>
             )

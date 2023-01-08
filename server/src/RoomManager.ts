@@ -1,16 +1,17 @@
 import Room from "./Room";
 import {RoomInfo} from "@communication/parameters"
 import { logger } from "./tools/ServerLogger";
+import Player from "./Player";
 
 const roomManager: {
     rooms: Map<string,Room>
-    createRoom(name: string,host: string): Room
+    createRoom(name: string,host: Player): Room
     getRoom(name: string) : Room|undefined
     getRoomList(): RoomInfo[]
     removeRoom(room: string|Room):boolean
 } = {
     rooms: new Map(),
-    createRoom(name: string, host: string) {
+    createRoom(name: string, host: Player) {
         logger.info('createRoom ',name);
         let room = new Room(name,host)
         this.rooms.set(name, room);
