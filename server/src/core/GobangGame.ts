@@ -133,7 +133,8 @@ export class GobangABP implements IABPor<GameState, GameAction> {
                 // if (cnt == 4 && view != turn) {//我有四个了, 同时下一个回合是我的回合
                 //     return INF;
                 // }
-                score += Math.floor(cnt ** 5.5) + Math.floor((ccnt * 0.3) ** 5);
+                if(score>=INF) logger.error(`!!!!!!!!!!${score}`);
+                score += Math.floor(cnt ** 5.5) + Math.floor((ccnt) ** 6);//5 6
             }
         }
         return score;
@@ -313,7 +314,7 @@ export class GobangABP implements IABPor<GameState, GameAction> {
     }
     * branches(originState: GameState, turn: number) {
         let tmp = JSON.parse(JSON.stringify(originState)) as GameState;
-        if (false) {
+        if (true) {
             let [l, r, t, b] = this.getRange(originState);
             for (let i = t; i <= b; i++) {
                 for (let j = l; j <= r; j++) {
