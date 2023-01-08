@@ -11,6 +11,7 @@ import { GetNavigate } from './components/GetNavigate';
 import RoomPage from './pages/room/RoomPage';
 import { ResponseInfo, RoomInfo } from './communication/parameters';
 import boardcast from './tools/broadcast';
+import { basename } from './communication/settings';
 import Login from './components/login/Login';
 
 interface AppState {
@@ -31,7 +32,7 @@ class App extends React.Component<any, AppState> {
     return (
       <div className='wrapper'>
         <Login></Login>
-        <BrowserRouter>
+        <BrowserRouter basename={basename}>
           <GetNavigate></GetNavigate>
           <Routes>
             <Route path='/' element={<HomePage />}></Route>
