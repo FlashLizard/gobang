@@ -8,6 +8,7 @@ import { logger } from "src/tools/ServerLogger";
 import { matrix } from "src/tools/Generate";
 import Player from "src/Player";
 import { rejections } from "winston";
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 const dx = [1, 0, 1, -1]
 const dy = [0, 1, 1, 1]
@@ -94,7 +95,11 @@ export interface GobangRequest {
 }
 
 export class GobangABP implements IABPor<GameState, GameAction> {
+    para:[number,number,number]
 
+    constructor(para:[number,number,number]) {
+        this.para =para;
+    }
 
     getSlotScore(gameState: GameState, x: number, y: number, turn: number, view: number): number { //myTurn: 如果是我导致了当前局面, 则为真
         let score = 0;
@@ -134,7 +139,7 @@ export class GobangABP implements IABPor<GameState, GameAction> {
                 //     return INF;
                 // }
                 if(score>=INF) logger.error(`!!!!!!!!!!${score}`);
-                score += Math.floor(cnt ** 5.5) + Math.floor((ccnt) ** 6);//5 6
+                score += Math.floor(cnt ** this.para[0]) + Math.floor((ccnt*this.para[1]) ** this.para[2]);//5 1 6;5.5 0.3 6
             }
         }
         return score;

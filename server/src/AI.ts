@@ -2,14 +2,17 @@ import { CharacterInfo } from "@root/client/src/communication/parameters";
 import Character, { RequestEvent, RequestPara } from "./Character";
 import { GobangRequest, GobangABP } from "./core/GobangGame";
 import ABP from "./core/AI/ABP";
+import { aiPara } from "@root/client/src/communication/settings";
 
 class AI extends Character{
     abp: ABP<any,any> | null = null
+    other: number
 
-    constructor(name?: string) {
+    constructor(name?: string|null,other:number=0) {
         super();
         this.ok = true;
         this.type = 'AI';
+        this.other = other;
 
         if(name) {
             this.name = name;
@@ -20,7 +23,7 @@ class AI extends Character{
     }
 
     initialize(turn: number,depth: number = 2) {
-        this.abp = new ABP(new GobangABP(),turn,depth);
+        this.abp = new ABP(new GobangABP(aiPara[this.other]),turn,depth);
     }
 
     getInfo(): CharacterInfo {
@@ -28,6 +31,7 @@ class AI extends Character{
             name: this.name,
             ok: true,
             type: 'AI',
+            other: this.other,
         }
     }
     

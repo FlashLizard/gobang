@@ -10,6 +10,7 @@ import boardcast from "../../tools/broadcast";
 import { nowName } from "../../components/login/Login";
 import { loginCheck } from "../../components/login/Login";
 import { Parser } from "acorn";
+import { aiDesc, aiPara } from "src/communication/settings";
 interface RoomPageState {
     ok: boolean,
     roomName: string,
@@ -112,7 +113,7 @@ class RoomPage extends Page<{}, RoomPageState> {
         return btn;
     }
 
-    operateButton(type: string | null | undefined, index: number) {
+    operateButton(type: string | null | undefined, index: number, other?: number) {
         let btn;
         if (this.state.host != nowName) return null;
         if (type) {
@@ -120,7 +121,8 @@ class RoomPage extends Page<{}, RoomPageState> {
                 btn = <button onClick={() => socket.emitWithLogin('kick-player', index)}>Kick Out</button>
             }
             else {
-                btn = <button onClick={() => socket.emitWithLogin('change-pc-type', index)}>Change PC</button>
+                btn = <button onClick={() => socket.emitWithLogin('change-pc-type', 
+                {index:index,type:((other as number)+1)%aiPara.length})}>{aiDesc[other as number]}</button>
             }
         }
         else {
@@ -142,7 +144,7 @@ class RoomPage extends Page<{}, RoomPageState> {
                         {this.typeButton(value?.type, value?.name, i)}
                     </td>
                     <td className="td5">
-                        {this.operateButton(value?.type, i)}
+                        {this.operateButton(value?.type, i,value?.other)}
                     </td>
                 </tr>
             )

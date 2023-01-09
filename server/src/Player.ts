@@ -101,6 +101,9 @@ class Player extends Character {
         this.on('kick-player', (para: number) => {
             this.room?.exitPlayer(para);
         })
+        this.on('change-pc-type',(para:{index:number,type:number})=>{
+            this.room?.changeCharacter(para.index,new AI(null,para.type));
+        })
         this.on('change-turn', (para:number) => {
             this.room?.changeTurn(this,para);
         })

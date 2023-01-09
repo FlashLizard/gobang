@@ -27,6 +27,7 @@ export interface CharacterInfo {
     name: string,
     ok: boolean,
     type: string,
+    other?: number|undefined,
 }
 
 export type RequestPara = null | number[][]
