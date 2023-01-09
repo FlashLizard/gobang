@@ -4,7 +4,7 @@ import GamePage from './pages/game/GamePage';
 import RoomListPage from './pages/roomList/RoomListPage';
 import './App.css';
 import './pages/Page.css'
-import { Routes, Route, BrowserRouter } from 'react-router-dom'
+import { Routes, Route, BrowserRouter, HashRouter } from 'react-router-dom'
 import socket from './communication/socket';
 import GlobalContext from './context/Context';
 import { GetNavigate } from './components/GetNavigate';
@@ -32,7 +32,7 @@ class App extends React.Component<any, AppState> {
     return (
       <div className='wrapper'>
         <Login></Login>
-        <BrowserRouter basename={basename}>
+        <HashRouter basename={basename}>
           <GetNavigate></GetNavigate>
           <Routes>
             <Route path='/' element={<HomePage />}></Route>
@@ -40,7 +40,7 @@ class App extends React.Component<any, AppState> {
             <Route path='/roomlist' element={<RoomListPage />}></Route>
             <Route path='/room' element={<RoomPage></RoomPage>}></Route>
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </div>
     );
   }
