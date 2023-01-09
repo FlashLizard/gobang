@@ -32,7 +32,7 @@ class App extends React.Component<any, AppState> {
     return (
       <div className='wrapper'>
         <Login></Login>
-        <HashRouter basename={basename}>
+        <BrowserRouter basename={basename}>
           <GetNavigate></GetNavigate>
           <Routes>
             <Route path='/' element={<HomePage />}></Route>
@@ -40,7 +40,7 @@ class App extends React.Component<any, AppState> {
             <Route path='/roomlist' element={<RoomListPage />}></Route>
             <Route path='/room' element={<RoomPage></RoomPage>}></Route>
           </Routes>
-        </HashRouter>
+        </BrowserRouter>
       </div>
     );
   }
