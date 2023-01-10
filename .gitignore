@@ -21,6 +21,10 @@
 # settings
 # /client/src/communication/settings.ts
 
+# report
+/report
+report.*
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
