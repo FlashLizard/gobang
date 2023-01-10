@@ -139,7 +139,7 @@ export class GobangABP implements IABPor<GameState, GameAction> {
                 //     return INF;
                 // }
                 if(score>=INF) logger.error(`!!!!!!!!!!${score}`);
-                score += Math.floor(cnt ** this.para[0]) + Math.floor((ccnt*this.para[1]) ** this.para[2]);//5 1 6;5.5 0.3 6
+                score += Math.floor(cnt ** this.para[0]) + Math.floor((ccnt*this.para[1]) ** this.para[2]);
             }
         }
         return score;

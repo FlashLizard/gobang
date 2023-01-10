@@ -6,4 +6,4 @@ export const boardSize = 15; //smallest is 7
 export const timeout = 60;
 
 export const aiPara = new Array<[number,number,number]>([5,2,5],[5,1.2,6],[5,3,6],[4,1.5,8],[6,0,0]);
-export const aiDesc = ['Type 0','Type 1','Type 2','Type 3','Type 4'];
+export const aiDesc = ['Simple1','Simple2','Normal','Hard1','Hard2'];

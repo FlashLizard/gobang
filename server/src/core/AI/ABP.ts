@@ -45,11 +45,11 @@ class ABP<GameState, GameAction> {
                 let score = this.getScore(next.state,turn^1,restDepth-1, nowScore);
                 if(even) {
                     nowScore = Math.max(score, nowScore);
-                    if(nowScore>=INF||fatherScore<=nowScore) return nowScore;
+                    if(nowScore>=INF||fatherScore<nowScore) return nowScore;
                 }
                 else {
                     nowScore = Math.min(score, nowScore);
-                    if(nowScore<=-INF||fatherScore>=nowScore) return nowScore;
+                    if(nowScore<=-INF||fatherScore>nowScore) return nowScore;
                 }
             }
             return nowScore;
