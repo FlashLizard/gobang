@@ -1,15 +1,14 @@
 import { io } from "socket.io-client";
 import { boardSize, serverURL } from "./settings"
-import { emit } from "process";
 import { nowName } from "../components/login/Login";
 import boardcast from "../tools/broadcast";
 
+// 存放component对应的监听器
 let components: ({ component: any, listeners: { event: string, callback: any }[] })[] = []
 
 const socketIO = io(serverURL, {
     transports: ['websocket', 'polling', 'flashsocket']
 });
-
 
 const socket: {
     id: string
@@ -34,18 +33,23 @@ const socket: {
     }
 }
 
+// 为componet绑定监听事件
 export function on(component: any, event: string, callback: (...para: any[]) => any, only: boolean = true) {
+
+    //查找对应componet在数组中的位置
     let index = components.findIndex((v) => { if (v.component == component) return true; });
     if (index == -1) {
         index = components.length;
         components.push({ component: component, listeners: [] });
     }
+
     let tmp = components[index];
     if (only && tmp.listeners.findIndex((v) => v.callback == callback) != -1) return;
     tmp.listeners.push({ event: event, callback: callback });
     socketIO.on(event, callback);
 }
 
+// 移除componet之前绑定的所有事件
 export function off(component: any) {
     let index = components.findIndex((v) => { if (v.component == component) return true; });
     if (index == -1) return;
@@ -53,7 +57,6 @@ export function off(component: any) {
     for (let l of tmp.listeners) {
         socketIO.removeListener(l.event, l.callback);
     }
-    console.log(socketIO.listeners('room-info'));
     tmp.listeners = [];
 }
 

@@ -19,7 +19,7 @@
 .env.production.local
 
 # settings
-# /client/src/communication/settings.ts
+/client/src/communication/settings.ts
 
 # report
 /report
