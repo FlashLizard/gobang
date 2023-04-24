@@ -1,7 +1,7 @@
 import React from "react";
 import { GameResultInfo, GobangGameInfo } from "../../communication/parameters";
 import SocketContext, { off, on } from "../../communication/socket";
-import Page from "../Page";
+import Page, { PageContext } from "../Page";
 import '../Page.css'
 import './GamePage.css'
 import socket from "../../communication/socket";
@@ -11,6 +11,7 @@ import { boardSize } from '../../communication/settings'
 import boardcast from "../../tools/broadcast";
 import { loginCheck } from "../../components/login/Login";
 import CancelButton from "../../components/cancel/CancelButton";
+import { language } from "src/context/language";
 
 let canAction: boolean = false;
 let view: number|undefined
@@ -84,7 +85,7 @@ class GamePage extends Page<{}, GamePageState> {
         off(this);
     }
 
-    gameEndPanel() {
+    gameEndPanel(lan: number) {
         let result = this.state.result;
         if (!result) return null;
         return (
@@ -95,35 +96,35 @@ class GamePage extends Page<{}, GamePageState> {
                     className={'panel'}
                 >
                     <CancelButton onClick={() => this.setState({ showGameEndPanel: false })}></CancelButton>
-                    <h3 className="title">Game End</h3>
-                    <h4>{!result.player ? `No Winner` : `${result.player} is Winner`}</h4>
+                    <h3 className="title">{language.gameEnd[lan]}</h3>
+                    <h4>{!result.player ? language.noWinner[lan] : result.player + language.winner[lan]}</h4>
                     <div
                         className="buttonGroup"
                     >
                         <button onClick={() => {
                             navigate('/');
-                        }}>Back To Home</button>
+                        }}>{language.backToHome[lan]}</button>
                         <button onClick={() => {
                             navigate('/room');
-                        }}>Return Room</button>
+                        }}>{language.returnRoom[lan]}</button>
                     </div>
                 </div>
             </div>
         )
     }
 
-    render(): React.ReactNode {
+    renderPage(context:PageContext): React.ReactNode {
 
         return (
             <div>
-                {this.state.showGameEndPanel && this.gameEndPanel()}
+                {this.state.showGameEndPanel && this.gameEndPanel(context.lan)}
                 <div className="gamePanel">
-                    <div className="title">Gobang Game</div>
+                    <div className="title">{language.gobang[context.lan]}</div>
                     {this.state.restTime ?
-                        <div>{`Your Turn: ${this.state.restTime} seconds rest`}</div> :
-                        <div>{`Others' Turn`}</div>
+                        <div>{language.yourTurn[context.lan] + language.restTime[context.lan](this.state.restTime)}</div> :
+                        <div>{language.opponentTurn[context.lan]}</div>
                     }
-                    <NavigateButton to='/'>Back To Home</NavigateButton>
+                    <NavigateButton to='/'>{language.backToHome[context.lan]}</NavigateButton>
                     <Board board={this.state.board} recent={this.state.recent}></Board>
                 </div>
             </div>

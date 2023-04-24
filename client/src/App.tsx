@@ -13,9 +13,13 @@ import { ResponseInfo, RoomInfo } from './communication/parameters';
 import boardcast from './tools/broadcast';
 import { basename } from './communication/settings';
 import Login from './components/login/Login';
+import { languageId } from './context/language';
+import Page from './pages/Page';
+import { LanSelector } from './components/lanSelector/LanSelector';
 
 interface AppState {
   roomName: string,
+  lan: number,
 }
 
 class App extends React.Component<any, AppState> {
@@ -25,22 +29,33 @@ class App extends React.Component<any, AppState> {
     super(props);
     this.state = {
       roomName: "None",
+      lan: languageId.zh,
     }
+    this.setLan = this.setLan.bind(this);
+  }
+
+  setLan(lan: number) {
+    this.setState({ lan: lan });
   }
 
   render(): React.ReactNode {
     return (
       <div className='wrapper'>
-        <Login></Login>
-        <BrowserRouter basename={basename}>
-          <GetNavigate></GetNavigate>
-          <Routes>
-            <Route path='/' element={<HomePage />}></Route>
-            <Route path='/game' element={<GamePage />}></Route>
-            <Route path='/roomlist' element={<RoomListPage />}></Route>
-            <Route path='/room' element={<RoomPage></RoomPage>}></Route>
-          </Routes>
-        </BrowserRouter>
+        <GlobalContext.Provider value={{ lan: this.state.lan, setLan: this.setLan }}>
+          <div className='top-bar'>
+            <LanSelector></LanSelector>
+            <Login></Login>
+          </div>
+          <BrowserRouter basename={basename}>
+            <GetNavigate></GetNavigate>
+            <Routes>
+              <Route path='/' element={<HomePage />}></Route>
+              <Route path='/game' element={<GamePage />}></Route>
+              <Route path='/roomlist' element={<RoomListPage />}></Route>
+              <Route path='/room' element={<RoomPage></RoomPage>}></Route>
+            </Routes>
+          </BrowserRouter>
+        </GlobalContext.Provider>
       </div>
     );
   }

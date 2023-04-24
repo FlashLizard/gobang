@@ -1,7 +1,7 @@
-.loginbar {
-    position: fixed;
+.login-bar {
+    /* position: fixed;
     right: 5px;
-    top: 5px;
+    top: 5px; */
     margin: 5px;
     height: fit-content;
     padding: 5px;
@@ -22,7 +22,7 @@
 
 
 
-.loginbar button {
+.login-bar button {
     transition: all 0.2s;
     background-color: #D8E6E7;
     border-radius: 5px;
@@ -33,10 +33,10 @@
     width: fit-content;
 }
 
-.loginbar button:hover {
+.login-bar button:hover {
     background-color: #9DC3C1;
 }
 
-.loginbar button:hover {
+.login-bar button:hover {
     background-color: #77AAAD;
 }

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import Page from "../Page";
+import Page, { PageContext } from "../Page";
 import "../Page.css"
 import "./HomePage.css"
 import socket, { off, on } from "../../communication/socket";
@@ -8,6 +8,7 @@ import navigate from "../../components/GetNavigate";
 import { ResponseInfo } from "../../communication/parameters";
 import boardcast from "../../tools/broadcast";
 import CancelButton from "../../components/cancel/CancelButton";
+import { language, languageId } from "src/context/language";
 interface HomePageState {
     showCreateRoomPanel: boolean
     showQuickStartPanel: boolean
@@ -50,7 +51,7 @@ class HomePage extends Page<{}, HomePageState> {
         )
     }
 
-    renderQuickStartPanel() {
+    renderQuickStartPanel(context: PageContext) {
         return (
             <div
                 className="backgroundPanel"
@@ -59,20 +60,20 @@ class HomePage extends Page<{}, HomePageState> {
                     className={'panel'}
                 >
                     <CancelButton onClick={() => this.setState({ showQuickStartPanel: false })}></CancelButton>
-                    <h3 className="title">Choose Your Turn</h3>
+                    <h3 className="title">{language.chooseYourTurn[context.lan]}</h3>
                     <div
                         className="buttonGroup"
                     >
-                        <this.QuickGameButton turn={0}>First</this.QuickGameButton>
-                        <this.QuickGameButton turn={1}>Second</this.QuickGameButton>
-                        <this.QuickGameButton turn={Math.floor(Math.random())}>Random</this.QuickGameButton>
+                        <this.QuickGameButton turn={0}>{language.first[context.lan]}</this.QuickGameButton>
+                        <this.QuickGameButton turn={1}>{language.second[context.lan]}</this.QuickGameButton>
+                        <this.QuickGameButton turn={Math.floor(Math.random())}>{language.random[context.lan]}</this.QuickGameButton>
                     </div>
                 </div>
             </div>
         )
     }
 
-    renderCreateRoomPanel() {
+    renderCreateRoomPanel(context: PageContext) {
         return (
             <div
                 className="backgroundPanel"
@@ -81,7 +82,7 @@ class HomePage extends Page<{}, HomePageState> {
                     className={'panel'}
                 >
                     <CancelButton onClick={() => this.setState({ showCreateRoomPanel: false })}></CancelButton>
-                    <h3 className="title">Create Room</h3>
+                    <h3 className="title">{language.createRoom[context.lan]}</h3>
                     <div>Name:
                         <input
                             onChange={(e) => this.setState({ roomName: e.target.value })}
@@ -93,29 +94,28 @@ class HomePage extends Page<{}, HomePageState> {
                     >
                         <button onClick={() => {
                             socket.emitWithLogin('create-room', this.state.roomName);
-                        }}>Create</button>
-                        <button onClick={() => this.setState({ showCreateRoomPanel: false })}>Cancel</button>
+                        }}>{language.confirm[context.lan]}</button>
+                        <button onClick={() => this.setState({ showCreateRoomPanel: false })}>{language.cancel[context.lan]}</button>
                     </div>
                 </div>
             </div>
         )
     }
 
-    render(): React.ReactNode {
+    renderPage(context: PageContext): React.ReactNode {
         return (
             <div>
-
-                <h1 className="title">Gobang Game</h1>
+                <h1 className="title">{language.tilte[context.lan]}</h1>
                 <div className="homePanel">
                     <div>
-                        <button onClick={() => this.setState({ showQuickStartPanel: true })}>Quick Start</button>
-                        <button onClick={() => this.setState({ showCreateRoomPanel: true })}>Create Room</button>
-                        <button onClick={() => { navigate('/roomlist') }}>Room List</button>
+                        <button onClick={() => this.setState({ showQuickStartPanel: true })}>{language.quickStart[context.lan]}</button>
+                        <button onClick={() => this.setState({ showCreateRoomPanel: true })}>{language.createRoom[context.lan]}</button>
+                        <button onClick={() => { navigate('/roomlist') }}>{language.roomList[context.lan]}</button>
                         <button onClick={() => { window.open("https://github.com/FlashLizard/gobang.git"); }}>Github</button>
                     </div>
                 </div>
-                {this.state.showCreateRoomPanel && this.renderCreateRoomPanel()}
-                {this.state.showQuickStartPanel && this.renderQuickStartPanel()}
+                {this.state.showCreateRoomPanel && this.renderCreateRoomPanel(context)}
+                {this.state.showQuickStartPanel && this.renderQuickStartPanel(context)}
             </div>
         )
     }

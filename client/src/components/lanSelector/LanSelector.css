@@ -1,0 +1,39 @@
+.language-bar {
+    display: inline-block;
+    transition: all 0.2s;
+    background-color: #D8E6E7;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 5px;
+    font-size: 15px;
+    font-weight: 900;
+    width: fit-content;
+}
+
+.language-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.language-bar:hover .language-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    width: max-content;
+}
+
+.select-button{
+    display: flex;
+    padding: 15px;
+    align-items: center;
+    justify-items: center;
+    cursor: pointer;
+}
+.select-button:hover{
+    background-color: #D8E6E7;
+}
+.select-button:active{
+    background-color: #c0dddf;
+}

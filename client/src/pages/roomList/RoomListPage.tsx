@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
-import Page from "../Page";
+import Page, { PageContext } from "../Page";
 import './RoomListPage.css'
 import { ResponseInfo, RoomInfo } from "../../communication/parameters";
 import socket, { off, on } from "../../communication/socket";
 import NavigateButton from "../../components/NavigateButton";
 import navigate from "../../components/GetNavigate";
 import boardcast from "../../tools/broadcast";
+import { language } from "src/context/language";
 
 interface RoomListPageState {
     roomList: RoomInfo[]
@@ -45,7 +46,7 @@ class RoomListPage extends Page<{}, RoomListPageState> {
         off(this);
     }
 
-    render(): React.ReactNode {
+    renderPage(context:PageContext): React.ReactNode {
         let rooms = this.state.roomList.map((value, i) => {
             return (<tr key={i}>
                 <td>{value.name}</td>
@@ -53,27 +54,27 @@ class RoomListPage extends Page<{}, RoomListPageState> {
                 <td>
                     {value.isIngame? <button onClick={() => {
                         socket.emitWithLogin('watch-game', value.name);
-                    }}>Watch</button>:
+                    }}>{language.watch[context.lan]}</button>:
                     <button onClick={() => {
                         socket.emitWithLogin('join-room', value.name);
-                    }}>Join</button>}
+                    }}>{language.join[context.lan]}</button>}
                 </td>
             </tr>)
         })
 
         return (
             <div className="roomListPanel">
-                <div className="subTitle">Room List</div>
+                <div className="subTitle">{language.roomList[context.lan]}</div>
                 <div className="buttonGroup">
-                    <NavigateButton to='/'>Back To Home</NavigateButton>
-                    <button onClick={() => socket.emit('get-room-list')}>Fresh</button>
+                    <NavigateButton to='/'>{language.backToHome[context.lan]}</NavigateButton>
+                    <button onClick={() => socket.emit('get-room-list')}>{language.fresh[context.lan]}</button>
                 </div>
                 <table className="roomTable" align="center" border={1}>
                     <thead>
                         <tr>
-                            <th>名称</th>
-                            <th>人数</th>
-                            <th>按钮</th>
+                            <th>{language.name[context.lan]}</th>
+                            <th>{language.amount[context.lan]}</th>
+                            <th>{language.operate[context.lan]}</th>
                         </tr>
                     </thead>
                     <tbody>

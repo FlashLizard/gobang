@@ -1,5 +1,5 @@
 import React from "react";
-import Page from "../Page";
+import Page, { PageContext } from "../Page";
 import "../Page.css"
 import socket, { off, on } from "../../communication/socket";
 import './RoomPage.css'
@@ -11,13 +11,13 @@ import { nowName } from "../../components/login/Login";
 import { loginCheck } from "../../components/login/Login";
 import { Parser } from "acorn";
 import { aiDesc, aiPara } from "src/communication/settings";
+import { language } from "src/context/language";
 interface RoomPageState {
     ok: boolean,
     roomName: string,
     list: (CharacterInfo | null)[],
     host: string,
 }
-
 class RoomPage extends Page<{}, RoomPageState> {
     toGame: boolean
 
@@ -113,12 +113,14 @@ class RoomPage extends Page<{}, RoomPageState> {
         return btn;
     }
 
-    operateButton(type: string | null | undefined, index: number, other?: number) {
+    operateButton(type: string | null | undefined, index: number, lan: number, other?: number) {
         let btn;
         if (this.state.host != nowName) return null;
+        
+        
         if (type) {
             if (type == 'Player') {
-                btn = <button onClick={() => socket.emitWithLogin('kick-player', index)}>Kick Out</button>
+                btn = <button onClick={() => socket.emitWithLogin('kick-player', index)}>{language.kickOut[lan]}</button>
             }
             else {
                 btn = <button onClick={() => socket.emitWithLogin('change-pc-type', 
@@ -128,12 +130,12 @@ class RoomPage extends Page<{}, RoomPageState> {
         else {
             btn = <button onClick={() => {
                 socket.emitWithLogin('change-turn', index);
-            }}>Set Mine</button>
+            }}>{language.chooseSlot[lan]}</button>
         }
         return btn;
     }
 
-    render(): React.ReactNode {
+    renderPage(context:PageContext): React.ReactNode {
         let list = this.state.list.map((value, i) => {
             return (
                 <tr key={i}>
@@ -144,38 +146,38 @@ class RoomPage extends Page<{}, RoomPageState> {
                         {this.typeButton(value?.type, value?.name, i)}
                     </td>
                     <td className="td5">
-                        {this.operateButton(value?.type, i,value?.other)}
+                        {this.operateButton(value?.type, i,context.lan, value?.other)}
                     </td>
                 </tr>
             )
         })
         return (
             <div className="wrapper roomPanel">
-                <div className="title">Gobang Game</div>
+                <div className="title">{language.gobang[context.lan]}</div>
                 <div className="horizontalWrapper">
                     <div>{`Room: ${this.state.roomName}`}</div>
                     <div>{`Host: ${this.state.host}`}</div>
                 </div>
                 <div className="horizontalWrapper">
-                    <button onClick={() => navigate('/')}>Back</button>
+                    <button onClick={() => navigate('/')}>{language.backToHome[context.lan]}</button>
                     {
                         nowName == this.state.host ?
-                            <button onClick={() => socket.emitWithLogin('start-game')}>Start</button> :
+                            <button onClick={() => socket.emitWithLogin('start-game')}>{language.start[context.lan]}</button> :
                             <button onClick={this.changeOk} className={this.state.ok ? 'ok' : 'preparing'}>
                                 {this.state.ok ? 'Ok' : 'Prepare'}
                             </button>
 
                     }
-                    <button onClick={() => socket.emitWithLogin('get-room-info')}>Fresh</button>
+                    <button onClick={() => socket.emitWithLogin('get-room-info')}>{language.fresh[context.lan]}</button>
                 </div>
                 <table className='room'>
                     <thead>
                         <tr>
-                            <th id='th1'>序号</th>
-                            <th id='th2'>名称</th>
-                            <th id='th3'>状态</th>
-                            <th id='th4'>类型</th>
-                            <th id='th5'>操作</th>
+                            <th id='th1'>{language.number[context.lan]}</th>
+                            <th id='th2'>{language.name[context.lan]}</th>
+                            <th id='th3'>{language.status[context.lan]}</th>
+                            <th id='th4'>{language.type[context.lan]}</th>
+                            <th id='th5'>{language.operate[context.lan]}</th>
                         </tr>
                     </thead>
                     <tbody>

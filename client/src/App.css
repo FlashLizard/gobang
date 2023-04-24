@@ -5,6 +5,16 @@
   margin: auto;
 }
 
+.top-bar {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  padding: 5px;
+  width: fit-content;
+  display: flex;
+  align-items: flex-start;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

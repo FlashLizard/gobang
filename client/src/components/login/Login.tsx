@@ -6,6 +6,8 @@ import navigate from '../GetNavigate';
 import './Login.css'
 import '../../pages/Page.css'
 import CancelButton from '../cancel/CancelButton';
+import { language } from 'src/context/language';
+import GlobalContext from 'src/context/Context';
 
 interface LoginState {
     name: string | null | undefined,
@@ -16,8 +18,8 @@ interface LoginState {
 export let nowName: string | undefined | null
 
 export function loginCheck() {
-    if(!nowName) {
-        boardcast.alert('Please Login First');
+    if (!nowName) {
+        boardcast.alert("please login");
         navigate('/');
     }
 }
@@ -48,12 +50,12 @@ class Login extends React.Component<any, LoginState> {
             if (para.code) {
                 nowName = para.others;
                 this.setState({ name: para.others, inputName: para.others ?? "", showLoginPanel: false });
-                if(!nowName) console.log(para.others,typeof para.others);
+                if (!nowName) console.log(para.others, typeof para.others);
             }
         })
     }
 
-    loginPanel() {
+    loginPanel(lan: number) {
         return (
             <div
                 className="backgroundPanel"
@@ -61,7 +63,7 @@ class Login extends React.Component<any, LoginState> {
                 <div
                     className={'panel'}
                 >
-                    <h1 className='title'>Login</h1>
+                    <h1 className='title'>{language.login[lan]}</h1>
                     <CancelButton onClick={() => this.setState({ showLoginPanel: false })}></CancelButton>
                     <div> Name:
                         <input
@@ -72,10 +74,10 @@ class Login extends React.Component<any, LoginState> {
                     <div
                         className="buttonGroup"
                     >
-                        <button onClick={() => socket.emit('login', { name: this.state.inputName })}>Confirm</button>
-                        <button onClick={() => this.setState({ showLoginPanel: false })}>Cancel</button>
+                        <button onClick={() => socket.emit('login', { name: this.state.inputName })}>{language.confirm[lan]}</button>
+                        <button onClick={() => this.setState({ showLoginPanel: false })}>{language.cancel[lan]}</button>
                         <br></br>
-                        <button onClick={() => socket.emit('login', { name: this.getRandomName() })}>游客登陆</button>
+                        <button onClick={() => socket.emit('login', { name: this.getRandomName() })}>{language.guestLogin[lan]}</button>
                     </div>
                 </div>
             </div>
@@ -83,29 +85,37 @@ class Login extends React.Component<any, LoginState> {
     }
 
     render(): React.ReactNode {
-        let loginbar;
-        if(this.state.name) {
-            loginbar = (
-                <div className="loginbar">
-                    <div className='name'>
-                        {this.state.name}
-                    </div>
-                    <button onClick={()=>socket.emitWithLogin('login-out')}>Login Out</button>
-                </div>
-            )
-        }
-        else {
-            loginbar = <div className="loginbar">
-                <button className='loginbutton' onClick={() => {
-                    this.setState({ showLoginPanel: true });
-                }}>Login</button>
-            </div>
-        }
         return (
-            <div>
-                {loginbar}
-                {this.state.showLoginPanel && this.loginPanel()}
-            </div>
+            <GlobalContext.Consumer>
+                {(context) => {
+
+                    let loginbar;
+                    if (this.state.name) {
+                        loginbar = (
+                            <div className="login-bar">
+                                <div className='name'>
+                                    {this.state.name}
+                                </div>
+                                <button onClick={() => socket.emitWithLogin('login-out')}>{language.loginOut[context.lan]}</button>
+                            </div>
+                        )
+                    }
+                    else {
+                        loginbar = <div className="login-bar">
+                            <button className='loginbutton' onClick={() => {
+                                this.setState({ showLoginPanel: true });
+                            }}>{language.login[context.lan]}</button>
+                        </div>
+                    }
+                    return (
+
+                        <div>
+                            {loginbar}
+                            {this.state.showLoginPanel && this.loginPanel(context.lan)}
+                        </div>
+                    )
+                }}
+            </GlobalContext.Consumer>
         );
     }
 }
