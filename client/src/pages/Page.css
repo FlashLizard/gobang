@@ -65,6 +65,17 @@ div.backgroundPanel {
     color: #f9fffe;
 }
 
+.panel .tmpdiv {
+    width: 100%;
+}
+.panel .subtitle {
+    display: flex;
+    justify-items: center;
+    font-size: 25px;
+    -webkit-text-stroke: 1px #0a1212;
+    color: #f9fffe;
+}
+
 .panel input {
     width: 150px;
     margin: 5px;
@@ -113,6 +124,7 @@ div.backgroundPanel {
     -webkit-text-stroke: 4px #d5e51f;
     text-align: center;
 }
+
 
 
 

@@ -9,10 +9,12 @@ import { ResponseInfo } from "../../communication/parameters";
 import boardcast from "../../tools/broadcast";
 import CancelButton from "../../components/cancel/CancelButton";
 import { language, languageId } from "src/context/language";
+import gobangImg from "../../assets/images/gobang.png"
 interface HomePageState {
     showCreateRoomPanel: boolean
     showQuickStartPanel: boolean
     roomName: string,
+    game: string | null,
 }
 
 class HomePage extends Page<{}, HomePageState> {
@@ -23,6 +25,7 @@ class HomePage extends Page<{}, HomePageState> {
             showCreateRoomPanel: false,
             showQuickStartPanel: false,
             roomName: Math.floor(Math.random() * 1000).toString(),
+            game: null
         }
     }
 
@@ -51,6 +54,21 @@ class HomePage extends Page<{}, HomePageState> {
         )
     }
 
+    renderGameChoosePanel(lan:number) {
+        return <div>
+            <h4 className="subtitle">{language.chooseGame[lan]}</h4>
+            <div className="grid-group">
+                <img src={gobangImg}
+                    className={this.state.game === 'gobang' ? 'selected' : ''}
+                    onClick={() => {
+                        if (this.state.game === 'gobang') {
+                            this.setState({ game: null })
+                        }
+                        else this.setState({ game: 'gobang' })
+                    }}></img>
+            </div></div>
+    }
+
     renderQuickStartPanel(context: PageContext) {
         return (
             <div
@@ -59,15 +77,20 @@ class HomePage extends Page<{}, HomePageState> {
                 <div
                     className={'panel'}
                 >
-                    <CancelButton onClick={() => this.setState({ showQuickStartPanel: false })}></CancelButton>
-                    <h3 className="title">{language.chooseYourTurn[context.lan]}</h3>
-                    <div
-                        className="buttonGroup"
-                    >
-                        <this.QuickGameButton turn={0}>{language.first[context.lan]}</this.QuickGameButton>
-                        <this.QuickGameButton turn={1}>{language.second[context.lan]}</this.QuickGameButton>
-                        <this.QuickGameButton turn={Math.floor(Math.random())}>{language.random[context.lan]}</this.QuickGameButton>
-                    </div>
+                    <CancelButton onClick={() => this.setState({ showQuickStartPanel: false, game: null })}></CancelButton>
+                    <h3 className="title">{language.quickStart[context.lan]}</h3>
+                    {this.renderGameChoosePanel(context.lan)}
+                    {this.state.game && <div className="tmpdiv">
+                        <h4 className="subtitle">{language.chooseYourTurn[context.lan]}</h4>
+                        <div
+                            className="buttonGroup"
+                        >
+                            <this.QuickGameButton turn={0}>{language.first[context.lan]}</this.QuickGameButton>
+                            <this.QuickGameButton turn={1}>{language.second[context.lan]}</this.QuickGameButton>
+                            <this.QuickGameButton turn={Math.floor(Math.random())}>{language.random[context.lan]}</this.QuickGameButton>
+                        </div>
+                    </div>}
+
                 </div>
             </div>
         )
@@ -81,7 +104,7 @@ class HomePage extends Page<{}, HomePageState> {
                 <div
                     className={'panel'}
                 >
-                    <CancelButton onClick={() => this.setState({ showCreateRoomPanel: false })}></CancelButton>
+                    <CancelButton onClick={() => this.setState({ showCreateRoomPanel: false, game: null })}></CancelButton>
                     <h3 className="title">{language.createRoom[context.lan]}</h3>
                     <div>Name:
                         <input
@@ -89,13 +112,18 @@ class HomePage extends Page<{}, HomePageState> {
                             value={this.state.roomName}>
                         </input>
                     </div>
+                    {this.renderGameChoosePanel(context.lan)}
                     <div
                         className="buttonGroup"
                     >
                         <button onClick={() => {
-                            socket.emitWithLogin('create-room', this.state.roomName);
+                            if(this.state.game) {
+                                socket.emitWithLogin('create-room', this.state.roomName);
+                            } else {
+                                boardcast.alert("Please Choose Game");
+                            }
                         }}>{language.confirm[context.lan]}</button>
-                        <button onClick={() => this.setState({ showCreateRoomPanel: false })}>{language.cancel[context.lan]}</button>
+                        <button onClick={() => this.setState({ showCreateRoomPanel: false, game: null })}>{language.cancel[context.lan]}</button>
                     </div>
                 </div>
             </div>

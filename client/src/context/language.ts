@@ -17,6 +17,7 @@ const language = {
     first: ['先手','First'],
     second: ['后手','Second'],
     random: ['随机','Random'],
+    chooseGame: ['选择游戏', 'Choose Game'],
     chooseYourTurn: ['选择先后手','Choose Your Turn'],
     pleaseLogin: ['请先登录','Please Login'],
     loginSucess: ['登录成功','Login Sucess'],

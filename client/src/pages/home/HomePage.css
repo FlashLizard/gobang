@@ -19,3 +19,28 @@
     align-items: center;
     border-radius: 10px;
 }
+
+.grid-group {
+    display: grid;
+    min-width: 400px;
+    width: 100%;
+    padding: 10px;
+    grid-template-columns: repeat(auto-fill, 70px);
+    grid-template-rows: repeat(auto-fill, 70px);
+    grid-gap: 10px 10px;
+    place-content: stretch stretch;
+}
+.grid-group img {
+    width: 100%;
+    height: 100%;
+}
+.grid-group img:hover {
+    opacity: 80%;
+}
+.grid-group img:hover {
+    opacity: 80%;
+}
+
+.grid-group img.selected {
+    opacity: 70%;
+}
