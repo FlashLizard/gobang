@@ -166,7 +166,7 @@ class RoomPage extends Page<{}, RoomPageState> {
                                 nowName == this.state.host ?
                                     <button onClick={() => socket.emitWithLogin('start-game')}>{language.start[context.lan]}</button> :
                                     <button onClick={this.changeOk} className={this.state.ok ? 'ok' : 'preparing'}>
-                                        {this.state.ok ? 'Ok' : 'Prepare'}
+                                        {this.state.ok ? 'Ok' : language.prepare[context.lan]}
                                     </button>
 
                             }

@@ -112,6 +112,7 @@ class HomePage extends Page<{}, HomePageState> {
                         </input>
                     </div>
                     {this.renderGameChoosePanel(context.lan)}
+                    { this.state.game &&
                     <div
                         className="buttonGroup"
                     >
@@ -123,7 +124,7 @@ class HomePage extends Page<{}, HomePageState> {
                             }
                         }}>{language.confirm[context.lan]}</button>
                         <button onClick={() => this.setState({ showCreateRoomPanel: false, game: null })}>{language.cancel[context.lan]}</button>
-                    </div>
+                    </div>}
                 </div>
             </div>
         )

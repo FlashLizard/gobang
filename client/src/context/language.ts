@@ -23,6 +23,7 @@ const language = {
     chooseYourTurn: ['选择先后手','Choose Your Turn'],
     pleaseLogin: ['请先登录','Please Login'],
     pleaseChooseGame: ['请选择游戏','Please Choose Game'],
+    prepare: ['准备','Prepare'],
     noRoom: ['暂无房间','No Room'],
     beKicked: ['你已被踢出房间','You have been kicked out of the room'],
     notInGame: ['你不在游戏中','You are not in the game'],
