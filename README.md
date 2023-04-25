@@ -1,10 +1,10 @@
-# Gobang
+# Online Chess Game Platform
 
-You can visit [Gobang](http://gobang.flashlizard.tk/) to see the Final Result.
+You can visit [Online Chess Game Platform](http://ocgp.flashlizard.tk/) to see the Final Result.
 
 ## Description
 
-This is a web gobang application with lobby feature. I have accomplished login and ai(use $\alpha - \beta$ Pruning Algorithm) features soon.
+This is a web chess application with lobby feature. I have accomplished login and ai(use $\alpha - \beta$ Pruning Algorithm) features.
 
 ## How To Deploy Simply
 

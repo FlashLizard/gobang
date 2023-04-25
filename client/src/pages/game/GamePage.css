@@ -38,18 +38,18 @@ table.board {
 
 .board td {
     border: 2px solid black;
-    width: min(max(18px, 2vw), 23px);
-    height: min(max(18px, 2vw), 23px);
-    min-width: min(max(18px, 2vw), 23px);
-    min-height: min(max(18px, 2vw), 23px);
-    max-width: min(max(18px, 2vw), 23px);
-    max-height: min(max(18px, 2vw), 23px);
-    font-size: min(max(14px, 1.4vw), 16px);
+    width: min(max(18px, 1vw), 23px);
+    height: min(max(18px, 1vw), 23px);
+    min-width: min(max(18px, 1vw), 23px);
+    min-height: min(max(18px, 1vw), 23px);
+    max-width: min(max(18px, 1vw), 23px);
+    max-height: min(max(18px, 1vw), 23px);
+    font-size: min(max(14px, 0.5vw), 16px);
     overflow: hidden;
     padding: 0;
     text-align: center;
     vertical-align: middle;
-    background-color: rgba(255, 229, 101, 0.801);
+    background-color: rgb(255, 229, 101);
     cursor: pointer;
 }
 
