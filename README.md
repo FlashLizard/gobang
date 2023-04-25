@@ -1,4 +1,4 @@
-# Online Chess Game Platform
+# Online Chess Game Platform (OCGP)
 
 You can visit [Online Chess Game Platform](http://ocgp.flashlizard.tk/) to see the Final Result.
 
