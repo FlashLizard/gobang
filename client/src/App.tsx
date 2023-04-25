@@ -35,6 +35,8 @@ class App extends React.Component<any, AppState> {
   }
 
   setLan(lan: number) {
+    socket.lan = lan;
+    boardcast.lan = lan;
     this.setState({ lan: lan });
   }
 

@@ -19,10 +19,12 @@ export let nowName: string | undefined | null
 
 export function loginCheck() {
     if (!nowName) {
-        boardcast.alert("please login");
+        boardcast.alert(language.pleaseLogin[theLan]);
         navigate('/');
     }
 }
+
+let theLan = 0;
 
 class Login extends React.Component<any, LoginState> {
 
@@ -63,7 +65,7 @@ class Login extends React.Component<any, LoginState> {
                 <div
                     className={'panel'}
                 >
-                    <h1 className='title'>{language.login[lan]}</h1>
+                    <h2 className='title'>{language.login[lan]}</h2>
                     <CancelButton onClick={() => this.setState({ showLoginPanel: false })}></CancelButton>
                     <div> Name:
                         <input
@@ -72,12 +74,11 @@ class Login extends React.Component<any, LoginState> {
                         </input>
                     </div>
                     <div
-                        className="buttonGroup"
+                        id="login-button-group"
                     >
-                        <button onClick={() => socket.emit('login', { name: this.state.inputName })}>{language.confirm[lan]}</button>
-                        <button onClick={() => this.setState({ showLoginPanel: false })}>{language.cancel[lan]}</button>
-                        <br></br>
-                        <button onClick={() => socket.emit('login', { name: this.getRandomName() })}>{language.guestLogin[lan]}</button>
+                        <button id="login" onClick={() => socket.emit('login', { name: this.state.inputName })}>{language.confirm[lan]}</button>
+                        <button id="cancel" onClick={() => this.setState({ showLoginPanel: false })}>{language.cancel[lan]}</button>
+                        <button id="guest" onClick={() => socket.emit('login', { name: this.getRandomName() })}>{language.guestLogin[lan]}</button>
                     </div>
                 </div>
             </div>
@@ -88,7 +89,7 @@ class Login extends React.Component<any, LoginState> {
         return (
             <GlobalContext.Consumer>
                 {(context) => {
-
+                    theLan = context.lan;
                     let loginbar;
                     if (this.state.name) {
                         loginbar = (

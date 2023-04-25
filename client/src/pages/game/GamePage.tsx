@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { GameResultInfo, GobangGameInfo } from "../../communication/parameters";
 import SocketContext, { off, on } from "../../communication/socket";
 import Page, { PageContext } from "../Page";
@@ -14,11 +14,11 @@ import CancelButton from "../../components/cancel/CancelButton";
 import { language } from "src/context/language";
 
 let canAction: boolean = false;
-let view: number|undefined
+let view: number | undefined
 
 interface GamePageState {
     board: number[][]
-    recent: [number,number]|undefined|null
+    recent: [number, number] | undefined | null
     restTime: number | null
     showGameEndPanel: boolean
     result: GameResultInfo | null
@@ -52,13 +52,13 @@ class GamePage extends Page<{}, GamePageState> {
         on(this, 'game-info', (gameInfo: GobangGameInfo) => {
             console.log('game-info', gameInfo);
             if (gameInfo == null) {
-                boardcast.alert('You are not in a game');
+                boardcast.alertL(language.notInGame);
                 navigate('/');
                 return;
             }
-            this.setState({ board: gameInfo.board,recent: typeof gameInfo.turn=='number'?gameInfo.historyActions[gameInfo.turn].pop():null });
+            this.setState({ board: gameInfo.board, recent: typeof gameInfo.turn == 'number' ? gameInfo.historyActions[gameInfo.turn].pop() : null });
         });
-        on(this, 'start-info',(para:number) =>{
+        on(this, 'start-info', (para: number) => {
             view = para;
         })
         on(this, 'rest-time', (para: number) => {
@@ -113,28 +113,29 @@ class GamePage extends Page<{}, GamePageState> {
         )
     }
 
-    renderPage(context:PageContext): React.ReactNode {
+    renderPage(context: PageContext): React.ReactNode {
 
         return (
-            <div>
+            <Fragment>
                 {this.state.showGameEndPanel && this.gameEndPanel(context.lan)}
-                <div className="gamePanel">
-                    <div className="title">{language.gobang[context.lan]}</div>
+                <h1 className="title">{language.gobang[context.lan]}</h1>
+                <div className="game-panel">
                     {this.state.restTime ?
                         <div>{language.yourTurn[context.lan] + language.restTime[context.lan](this.state.restTime)}</div> :
                         <div>{language.opponentTurn[context.lan]}</div>
                     }
-                    <NavigateButton to='/'>{language.backToHome[context.lan]}</NavigateButton>
-                    <Board board={this.state.board} recent={this.state.recent}></Board>
+                    <div className="inner-panel">
+                        <NavigateButton to='/'>{language.backToHome[context.lan]}</NavigateButton>
+                        <Board board={this.state.board} recent={this.state.recent}></Board></div>
                 </div>
-            </div>
+            </Fragment>
         )
     }
 }
 
 interface BoardProp {
     board: number[][],
-    recent: [number,number]|null|undefined,
+    recent: [number, number] | null | undefined,
 }
 
 class Board extends React.Component<BoardProp> {
@@ -157,8 +158,8 @@ class Board extends React.Component<BoardProp> {
                     row.map((value, j) => {
                         return value == -1 ?
                             (<td key={j} onClick={() => this.onClickSlot([i, j])}></td>) :
-                            (<td key={j} className={this.props.recent&&i==this.props.recent[0]&&
-                            j==this.props.recent[1]?"recent":""}>
+                            (<td key={j} className={this.props.recent && i == this.props.recent[0] &&
+                                j == this.props.recent[1] ? "recent" : ""}>
                                 {value == -1 ? " " : (value == 0 ? "⚫" : "⚪")}
                             </td>);
                     })

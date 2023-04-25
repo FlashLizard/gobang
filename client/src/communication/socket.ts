@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 import { boardSize, serverURL } from "./settings"
 import { nowName } from "../components/login/Login";
 import boardcast from "../tools/broadcast";
+import { language, languageId } from "../context/language";
 
 // 存放component对应的监听器
 let components: ({ component: any, listeners: { event: string, callback: any }[] })[] = []
@@ -12,11 +13,13 @@ const socketIO = io(serverURL, {
 
 const socket: {
     id: string
+    lan: number
     on: (event: string, callback: (...others: any[]) => any) => any
     emit: (event: string, para?: any) => any
     emitWithLogin: (event: string, para?: any) => any
 } = {
     id: socketIO.id,
+    lan: languageId.zh,
     on(event, callback) {
         socketIO.on(event, callback);
     },
@@ -28,7 +31,7 @@ const socket: {
             socketIO.emit(event, para)
         }
         else {
-            boardcast.alert('Please Login In');
+            boardcast.alert(language.pleaseLogin[this.lan]);
         }
     }
 }

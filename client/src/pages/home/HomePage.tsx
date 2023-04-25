@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { Fragment, useContext } from "react";
 import Page, { PageContext } from "../Page";
 import "../Page.css"
 import "./HomePage.css"
@@ -16,7 +16,6 @@ interface HomePageState {
     roomName: string,
     game: string | null,
 }
-
 class HomePage extends Page<{}, HomePageState> {
 
     constructor(props: any) {
@@ -54,7 +53,7 @@ class HomePage extends Page<{}, HomePageState> {
         )
     }
 
-    renderGameChoosePanel(lan:number) {
+    renderGameChoosePanel(lan: number) {
         return <div>
             <h4 className="subtitle">{language.chooseGame[lan]}</h4>
             <div className="grid-group">
@@ -117,10 +116,10 @@ class HomePage extends Page<{}, HomePageState> {
                         className="buttonGroup"
                     >
                         <button onClick={() => {
-                            if(this.state.game) {
+                            if (this.state.game) {
                                 socket.emitWithLogin('create-room', this.state.roomName);
                             } else {
-                                boardcast.alert("Please Choose Game");
+                                boardcast.alertL(language.pleaseChooseGame);
                             }
                         }}>{language.confirm[context.lan]}</button>
                         <button onClick={() => this.setState({ showCreateRoomPanel: false, game: null })}>{language.cancel[context.lan]}</button>
@@ -132,7 +131,7 @@ class HomePage extends Page<{}, HomePageState> {
 
     renderPage(context: PageContext): React.ReactNode {
         return (
-            <div>
+            <Fragment>
                 <h1 className="title">{language.tilte[context.lan]}</h1>
                 <div className="homePanel">
                     <div>
@@ -144,7 +143,7 @@ class HomePage extends Page<{}, HomePageState> {
                 </div>
                 {this.state.showCreateRoomPanel && this.renderCreateRoomPanel(context)}
                 {this.state.showQuickStartPanel && this.renderQuickStartPanel(context)}
-            </div>
+            </Fragment>
         )
     }
 }

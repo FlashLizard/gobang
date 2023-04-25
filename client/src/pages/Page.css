@@ -25,19 +25,28 @@ div.backgroundPanel {
 .horizontalWrapper {
     display: flex;
     width: 100%;
-    max-width: 300px;
     justify-content: space-between;
-    margin: auto;
+    margin: 5px;
+    font-weight: 800;
+    color: rgb(198, 216, 231);
 }
 
 .horizontalWrapper button{
-    font-size: 10px;
+    font-size: min(20px,max(4vw,10px));
+}
+
+h1.title {
+    margin-top: min(5vh,100px);
+    width: fit-content;
+    max-width: 90vw;
+    font-size: max(2.5rem, 50px);
 }
 
 .panel {
     box-shadow: 8px 8px 2px rgb(6, 41, 62);
-    background: #D7FFF1;
-    width: max-content;
+    background: #d7fff1c7;
+    min-width: min(400px,max(300px,60vw));
+    min-height: min(400px,max(60vh,300px));
     position: fixed;
     top: 20%;
     margin: auto;
@@ -54,13 +63,14 @@ div.backgroundPanel {
 }
 
 .panel * {
+    font-size: min(1.5rem, 30px);
     border-radius: 4px;
     font: '#3F4B3B';
     font-weight: 900;
 }
 
 .panel .title {
-    font-size: 30px;
+    font-size: min(50px,max(4vw,30px));
     -webkit-text-stroke: 2px #0a1212;
     color: #f9fffe;
 }
@@ -84,10 +94,16 @@ div.backgroundPanel {
 
 .buttonGroup {
     display: flex;
-    flex-direction: column;
-    width: max-content;
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: fit-content;
+    width: 100%;
     margin: auto;
     align-items: center;
+}
+
+.buttonGroup button {
+    font-size: min(20px,max(2rem,20px));
 }
 
 .panel button {
@@ -101,13 +117,6 @@ div.backgroundPanel {
     width: 100%;
 }
 
-.subTitle {
-    font-size: 70px;
-    font-weight: 1000;
-    -webkit-text-stroke: 5px #21a3a3;
-    color: rgb(177, 230, 234);
-}
-
 .panel button:hover {
     background-color: #9DC3C1;
 }
@@ -118,31 +127,28 @@ div.backgroundPanel {
 
 .title {
     font-size: 70px;
-    color: rgb(80, 138, 255);
+    color: rgba(255, 179, 80, 0);
     font-weight: 10000;
-    text-shadow: 0px 0px 10px rgb(76, 151, 6);
-    -webkit-text-stroke: 4px #d5e51f;
+    text-shadow: 0px 0px 10px rgb(120, 151, 6);
+    -webkit-text-stroke: min(4px,0.1rem) #d4e51f;
     text-align: center;
 }
 
-
-
-
 button{
     transition: all 0.2s;
-    background-color: #D8E6E7;
+    background-color: #e2fafdd2;
     border-radius: 5px;
-    margin: 10px;
+    margin: min(10px,max(2vh,3px));
     padding: 5px;
-    font-size: 20px;
+    font-size: min(90px,max(1rem,15px));
     font-weight: 1000;
     width: 100%;
 }
 
 button:hover{
-    background-color: #85c2bf;
+    background-color: #bbecffe7;
 }
 
 button:active{
-    background-color: #77AAAD;
+    background-color: #93dbe7dc;
 }

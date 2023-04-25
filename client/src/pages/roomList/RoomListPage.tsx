@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { Fragment, useContext } from "react";
 import Page, { PageContext } from "../Page";
 import './RoomListPage.css'
 import { ResponseInfo, RoomInfo } from "../../communication/parameters";
@@ -63,8 +63,10 @@ class RoomListPage extends Page<{}, RoomListPageState> {
         })
 
         return (
-            <div className="roomListPanel">
-                <div className="subTitle">{language.roomList[context.lan]}</div>
+            <Fragment>
+                <h1 className="title">{language.roomList[context.lan]}</h1>
+                <div className="room-panel">
+                    <div className="room-top-panel">
                 <div className="buttonGroup">
                     <NavigateButton to='/'>{language.backToHome[context.lan]}</NavigateButton>
                     <button onClick={() => socket.emit('get-room-list')}>{language.fresh[context.lan]}</button>
@@ -87,8 +89,8 @@ class RoomListPage extends Page<{}, RoomListPageState> {
                             <td></td>
                         </tr>
                     </tfoot> */}
-                </table>
-            </div>
+                </table></div></div>
+            </Fragment>
         )
     }
 }

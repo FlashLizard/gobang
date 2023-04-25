@@ -1,11 +1,11 @@
 .cancel {
     transition: all 0.2s;
     position: absolute;
-    right: 5px;
-    top: 5px;
+    right: min(5px, 1vw);
+    top: min(5px, 1vw);
+    width: fit-content;
+    padding: 6px;
     background-color: rgb(127, 255, 212);
-    display: inline-block;
-    text-align: center;
     margin: 0;
 }
 
@@ -19,6 +19,15 @@
 }
 
 .cancel::after {
+    font-size: 30px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    margin: auto;
+    width: min-content;
+    height: min-content;
     content: "✖";
     color: aliceblue;
 }

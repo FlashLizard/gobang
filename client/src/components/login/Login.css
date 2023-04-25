@@ -20,7 +20,28 @@
     width: 100%;
 }
 
+#login-button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: 'a a b b ' '. c c .';
+    grid-gap: 10px 10px;
+    width: fit-content;
+    position: absolute;
+    bottom: 1rem;
+}
 
+#login-button-group #login{
+    grid-area: a;
+}
+
+#login-button-group #cancel{
+    grid-area: b;
+}
+
+#login-button-group #guest{
+    grid-area: c;
+}
 
 .login-bar button {
     transition: all 0.2s;

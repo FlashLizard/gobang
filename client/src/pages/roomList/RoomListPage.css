@@ -1,3 +1,106 @@
+table.room
+{
+    display: grid;
+    grid-template-columns: 3rem 6rem repeat(2, 3rem) 6rem;
+    grid-template-rows: auto;
+    grid-auto-rows: min(4rem,80px); 
+    grid-gap: 10px 10px;
+    place-content: center center;
+    place-items: stretch stretch;
+    min-width: fit-content;
+    width: 100%;
+    height: fit-content;
+    font-size: min(18px, max(2vw, 10px));
+}
+table.room button
+{
+    font-size: min(18px, max(2vw, 10px));
+}
+.room th
+{
+    background: rgba(16, 144, 183, 0.247);
+}
+.room-panel table button {
+    margin: auto;
+}
+.room-panel {
+    display: flex;
+    flex-direction: column;
+    background-color: #3ea4d3a2;
+    box-shadow: 0px 10px 10px #1d3304;
+    border-radius: 10px;
+    min-width: fit-content;
+    width: min(500px,60vw);
+    padding: max(0.5rem,10px);
+    margin: auto;
+    margin-top: min(5vh,10px);
+}
+
+.room-panel > .room-top-panel {
+	box-sizing : border-box;
+    background-color: #adc8d39f;
+    padding: max(1vh,10px);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: min(5vh,10px);
+    align-items: center;
+    border-radius: 10px;
+}
+
+.room td
+{
+    background-color: rgba(0, 255, 255, 0.281);
+    /* padding: 5px; */
+    /* border: 2px solid black; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: fit-content;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* height: min(22px, max(2
+    vh, 10px)); */
+}
+/* 
+#th1 {
+    width: fit-content;
+}
+
+#th2 {
+    width: fit-content;
+}
+
+#th3 {
+    width: fit-content;
+}
+
+#th4 {
+    width: fit-content;
+}
+
+#th5 {
+    min-width: 70px;
+    max-width: 70px;
+    width: fit-content;
+}
+
+.td2 {
+    min-width: 50px;
+    max-width: 50px;
+    width: fit-content;
+}
+
+.td5 {
+    min-width: 70px;
+    max-width: 70px;
+    width: fit-content;
+} */
+
+.room button {
+    width: fit-content;
+}
+
 .roomListPanel {
     display: flex;
     flex-direction: column;

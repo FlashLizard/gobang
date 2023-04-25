@@ -1,17 +1,18 @@
 .homePanel {
-    background-color: #3ed3bf;
+    background-color: #ffb84eb7;
     box-shadow: 0px 10px 10px #1d3304;
     border-radius: 10px;
     width: fit-content;
-    padding: 10px;
+    padding: max(0.5rem,10px);
     margin: auto;
+    margin-top: min(5vh,10px);
 }
 
 .homePanel > div {
-    background-color: #8FBC94;
-    padding: 50px;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    background-color: #fffd85a2;
+    padding: max(3rem,50px);
+    padding-top: max(2rem,20px);
+    padding-bottom: max(2rem,20px);
     display: flex;
     flex-direction: column;
     width: max-content;
@@ -22,7 +23,7 @@
 
 .grid-group {
     display: grid;
-    min-width: 400px;
+    min-width: min(400px,50vw);
     width: 100%;
     padding: 10px;
     grid-template-columns: repeat(auto-fill, 70px);
