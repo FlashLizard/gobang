@@ -22,6 +22,7 @@ const historyNum = 6;
 class GobangGame extends Game {
     board: number[][]
     historyActions: HistoryActions = [[], []]
+    turn: number = 0
 
     constructor(room: Room) {
         super(room);
@@ -52,39 +53,39 @@ class GobangGame extends Game {
     emitStartInfo(): void {
         this.room?.charaters.forEach((v,i)=>{
             if(v instanceof Player) {
-                v.emit('start-info',i);
+                v.emit('start-info', { view: i, gameId: this.gameId });
             }
         })
     }
 
-    getInfo(turn:number): GameState {
-        return { board: this.board, historyActions: this.historyActions,turn:turn };
+    getInfo(): GameState {
+        return { board: this.board, historyActions: this.historyActions,turn:this.turn };
     }
 
     async run(): Promise<GameResultInfo> {
-        let turn = 0;
+        this.turn = 0;
         let charaters = this.room?.charaters;
         if(!charaters) return {player:null};
         let result: GameResultInfo | null;
         while (true) {
-            let pos: [number, number] | null = await charaters[turn]?.request('action-pos', this.getInfo(turn), timeout);
-            logger.info(`${turn} action ${pos}`);
-            if(charaters[turn]?.type=='AI') await new Promise((resolve, reject)=>setTimeout(()=>resolve(null),1000));
+            let pos: [number, number] | null = await charaters[this.turn]?.request('action-pos', this.getInfo(), timeout);
+            logger.info(`${this.turn} action ${pos}`);
+            if(charaters[this.turn]?.type=='AI') await new Promise((resolve, reject)=>setTimeout(()=>resolve(null),1000));
             if (pos) {
-                this.board[pos[0]][pos[1]] = turn;
-                this.historyActions[turn].shift();
-                this.historyActions[turn].push(pos);
-                this.emitInfo(turn);
+                this.board[pos[0]][pos[1]] = this.turn;
+                this.historyActions[this.turn].shift();
+                this.historyActions[this.turn].push(pos);
+                this.emitInfo();
             }
             else {
-                result = { player: charaters[turn ^ 1]?.name,desc:'win' };
+                result = { player: charaters[this.turn ^ 1]?.name,desc:'win' };
                 break;
             }
-            result = this.checkResult({ board: this.board, historyActions: this.historyActions }, turn);
+            result = this.checkResult({ board: this.board, historyActions: this.historyActions }, this.turn);
             if (result) {
                 break;
             }
-            turn ^= 1;
+            this.turn ^= 1;
         }
         return result;
     }

@@ -9,9 +9,15 @@ export interface RoomInfo {
 }
 
 export interface GobangGameInfo {
+    gameId: string
     board: number[][]
     historyActions: ([number,number]|null|undefined)[][]
     turn: number
+} 
+
+export interface StartInfo {
+    view: number,
+    gameId: string,
 } 
 
 export interface LoginInfo {

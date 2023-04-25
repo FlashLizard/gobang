@@ -3,10 +3,12 @@ import AI from "src/AI";
 import gameManager from "src/GameManager";
 import Player from "src/Player";
 import Room from "src/Room";
+import { random } from "src/tools/Random";
 import { logger } from "src/tools/ServerLogger";
 
 abstract class Game {
     room: Room|undefined
+    gameId: string
     audience: (Player|null|undefined)[]
 
     constructor(room: Room) {
@@ -21,6 +23,7 @@ abstract class Game {
             }
         });
         this.audience = []
+        this.gameId = random(1,100000)+'';
     }
 
     abstract getInfo(...others:any[]): any
@@ -57,6 +60,7 @@ abstract class Game {
 
     emitInfo(...para:any[]) {
         let info = this.getInfo(...para);
+        info = {gameId: this.gameId, ...info};
         this.room?.emit('game-info', info);
         for (let c of this.audience) {
             c?.emit('game-info',info);

@@ -165,6 +165,7 @@ class Room {
         if(this.game) {
             this.game.audience.push(player);
             player.game = this.game;
+            this.game.emitInfo();
             return true;
         }
         return false;

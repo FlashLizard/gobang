@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { GameResultInfo, GobangGameInfo } from "../../communication/parameters";
+import { GameResultInfo, GobangGameInfo, StartInfo } from "../../communication/parameters";
 import SocketContext, { off, on } from "../../communication/socket";
 import Page, { PageContext } from "../Page";
 import '../Page.css'
@@ -22,35 +22,45 @@ interface GamePageState {
     restTime: number | null
     showGameEndPanel: boolean
     result: GameResultInfo | null
+    gameId: string | null
 }
 
 class GamePage extends Page<{}, GamePageState> {
 
+    
     constructor(props: any) {
         super(props)
 
+        this.fresh();
+    }
+
+    fresh() {
         let tmp = []
         for (let i = 0; i < boardSize; i++) {
             let row = [];
             for (let j = 0; j < boardSize; j++) row.push(-1);
             tmp.push(row);
         }
-
         this.state = {
             board: tmp,
             restTime: null,
             showGameEndPanel: false,
             result: null,
             recent: null,
+            gameId: null,
         }
+        this.setState({});
     }
 
     componentDidMount(): void {
         loginCheck();
         console.log("enter game");
         canAction = false;
+        this.fresh();
         on(this, 'game-info', (gameInfo: GobangGameInfo) => {
+            if(this.state.gameId && this.state.gameId !== gameInfo.gameId) return; 
             console.log('game-info', gameInfo);
+            this.setState({gameId:gameInfo.gameId});
             if (gameInfo == null) {
                 boardcast.alertL(language.notInGame);
                 navigate('/');
@@ -58,8 +68,9 @@ class GamePage extends Page<{}, GamePageState> {
             }
             this.setState({ board: gameInfo.board, recent: typeof gameInfo.turn == 'number' ? gameInfo.historyActions[gameInfo.turn].pop() : null });
         });
-        on(this, 'start-info', (para: number) => {
-            view = para;
+        on(this, 'start-info', (para: StartInfo) => {
+            this.setState({gameId:para.gameId})
+            view = para.view;
         })
         on(this, 'rest-time', (para: number) => {
             this.setState({ restTime: para });
